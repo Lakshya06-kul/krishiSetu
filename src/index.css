@@ -1,0 +1,84 @@
+@import "tailwindcss";
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+@theme {
+  --font-sans: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  --color-agri-primary: #16A34A;
+  --color-agri-primaryDark: #15803D;
+  --color-agri-secondary: #2563EB;
+  --color-agri-accent: #F59E0B;
+  --color-agri-success: #22C55E;
+  --color-agri-warning: #F59E0B;
+  --color-agri-error: #EF4444;
+  --color-agri-info: #0EA5E9;
+  --color-agri-bg: #F8FAFC;
+  --color-agri-surface: #FFFFFF;
+  --color-agri-border: #E5E7EB;
+  --color-agri-text: #111827;
+  --color-agri-subtext: #64748B;
+  --radius-btn: 14px;
+  --radius-card: 20px;
+  --radius-modal: 24px;
+  --radius-input: 12px;
+}
+
+:root {
+  font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  color-scheme: light;
+}
+
+body {
+  background-color: #F8FAFC;
+  color: #111827;
+  min-height: 100vh;
+  margin: 0;
+  padding: 0;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #F1F5F9;
+}
+::-webkit-scrollbar-thumb {
+  background: #CBD5E1;
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #94A3B8;
+}
+
+/* Touch targets optimization for mobile farmers */
+button, input, select, a {
+  min-height: 44px;
+}
+
+.tap-active {
+  transition: transform 0.15s ease, opacity 0.15s ease;
+}
+.tap-active:active {
+  transform: scale(0.97);
+  opacity: 0.9;
+}
+
+/* Shimmer / Skeleton Animation */
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+.animate-shimmer {
+  background: linear-gradient(90deg, #E2E8F0 25%, #F1F5F9 50%, #E2E8F0 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+/* Gradient background for AI hero sections */
+.ai-gradient-card {
+  background: linear-gradient(135deg, #16A34A 0%, #15803D 60%, #047857 100%);
+  color: #FFFFFF;
+}
