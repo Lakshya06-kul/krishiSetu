@@ -1,0 +1,136 @@
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["postgresqlExtensions"]
+}
+
+datasource db {
+  provider   = "postgresql"
+  url        = env("DATABASE_URL")
+  extensions = [postgis]
+}
+
+enum Role {
+  Farmer
+  Buyer
+  FPO
+}
+
+enum Status {
+  ACTIVE
+  SOLD
+  DRAFT
+  EXPIRED
+}
+
+model User {
+  id           String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  supabase_id  String        @unique @db.Uuid
+  phone        String        @unique @db.VarChar(15)
+  role         Role
+  full_name    String        @db.VarChar(255)
+  language     String        @default("hi") @db.VarChar(10)
+  created_at   DateTime      @default(now())
+
+  ProduceLots  ProduceLot[]
+  BuyerOffers  BuyerOffer[]
+
+  @@map("USERS")
+}
+
+model ProduceLot {
+  id             String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  farmer_id      String       @db.Uuid
+  crop           String       @db.VarChar(255)
+  quantity       Decimal      @db.Decimal
+  unit           String       @db.VarChar(50)
+  harvest_date   DateTime     @db.Date
+  grade          String       @db.VarChar(50)
+  ai_confidence  Decimal?     @db.Decimal
+  latitude       Decimal      @db.Decimal
+  longitude      Decimal      @db.Decimal
+  status         Status       @default(ACTIVE)
+
+  farmer         User         @relation(fields: [farmer_id], references: [id])
+  lot_images     LotImage[]
+  buyer_offers   BuyerOffer[]
+
+  @@map("PRODUCE_LOTS")
+}
+
+model LotImage {
+  id          String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  lot_id      String      @db.Uuid
+  image_url   String      @db.Text
+  position    Int         @db.Integer
+
+  lot         ProduceLot  @relation(fields: [lot_id], references: [id])
+
+  @@map("LOT_IMAGES")
+}
+
+model Market {
+  id          String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name        String      @db.VarChar(255)
+  district    String      @db.VarChar(255)
+  state       String      @db.VarChar(255)
+  location    Unsupported("geography(Point, 4326)")
+
+  prices      MarketPrice[]
+  forecasts   Forecast[]
+
+  @@map("MARKETS")
+}
+
+model MarketPrice {
+  id             String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  market_id      String      @db.Uuid
+  crop           String      @db.VarChar(255)
+  arrival_volume Decimal     @db.Decimal
+  modal_price    Decimal     @db.Decimal
+  recorded_date  DateTime    @db.Date
+
+  market         Market      @relation(fields: [market_id], references: [id])
+
+  @@index([market_id, crop, recorded_date])
+  @@map("MARKET_PRICES")
+}
+
+model Forecast {
+  id              String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  market_id       String      @db.Uuid
+  crop            String      @db.VarChar(255)
+  forecast_date   DateTime    @db.Date
+  predicted_price Decimal     @db.Decimal
+  confidence      Decimal     @db.Decimal
+
+  market          Market      @relation(fields: [market_id], references: [id])
+
+  @@map("FORECASTS")
+}
+
+model BuyerOffer {
+  id            String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  buyer_id      String      @db.Uuid
+  lot_id        String      @db.Uuid
+  offered_price Decimal     @db.Decimal
+  quantity      Decimal     @db.Decimal
+  status        String      @db.VarChar(50)
+
+  buyer         User        @relation(fields: [buyer_id], references: [id])
+  lot           ProduceLot  @relation(fields: [lot_id], references: [id])
+  transaction   Transaction?
+
+  @@map("BUYER_OFFERS")
+}
+
+model Transaction {
+  id             String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  offer_id       String      @unique @db.Uuid
+  final_price    Decimal     @db.Decimal
+  total_amount   Decimal     @db.Decimal
+  payment_status String      @db.VarChar(50)
+
+  offer          BuyerOffer  @relation(fields: [offer_id], references: [id])
+
+  @@map("TRANSACTIONS")
+}
