@@ -1,0 +1,53 @@
+import { Request, Response } from 'express';
+import { PrismaClient } from '@prisma/client';
+
+const prisma = new PrismaClient();
+
+export const createLot = async (req: any, res: Response): Promise<any> => {
+  try {
+    const supabaseId = req.user.sub;
+    const { crop, quantity, unit, harvest_date, grade, latitude, longitude } = req.body;
+
+    const user = await prisma.user.findUnique({
+      where: { supabase_id: supabaseId },
+    });
+
+    if (!user) {
+      return res.status(404).json({ success: false, error: { message: 'User not found' } });
+    }
+
+    const lot = await prisma.produceLot.create({
+      data: {
+        farmer_id: user.id,
+        crop,
+        quantity,
+        unit,
+        harvest_date: new Date(harvest_date),
+        grade,
+        latitude,
+        longitude,
+        status: 'ACTIVE',
+      },
+    });
+
+    return res.json({ success: true, data: lot });
+  } catch (error: any) {
+    return res.status(500).json({ success: false, error: { message: error.message } });
+  }
+};
+
+export const getLots = async (req: Request, res: Response): Promise<any> => {
+  try {
+    const lots = await prisma.produceLot.findMany({
+      where: { status: 'ACTIVE' },
+      include: {
+        farmer: { select: { full_name: true, phone: true } },
+        lot_images: true,
+      },
+      orderBy: { harvest_date: 'desc' },
+    });
+    return res.json({ success: true, data: lots });
+  } catch (error: any) {
+    return res.status(500).json({ success: false, error: { message: error.message } });
+  }
+};

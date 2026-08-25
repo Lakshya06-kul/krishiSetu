@@ -9,7 +9,13 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+import authRoutes from './routes/auth.routes';
+import lotRoutes from './routes/lot.routes';
+
 // Routes will be mounted here
+app.use('/auth', authRoutes);
+app.use('/lots', lotRoutes);
+
 app.get('/', (req, res) => {
   res.send('AgriLink API is running');
 });
