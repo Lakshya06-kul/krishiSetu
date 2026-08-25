@@ -8,6 +8,7 @@ export default function SplashAuthScreen({ onComplete }) {
   const [step, setStep] = useState('auth'); // 'auth' -> 'role'
   const [phone, setPhone] = useState('9876543210');
   const [otp, setOtp] = useState('1234');
+  const [selectedRole, setSelectedRole] = useState('farmer');
   const [otpSent, setOtpSent] = useState(false);
   const [loading, setLoading] = useState(false);
 
