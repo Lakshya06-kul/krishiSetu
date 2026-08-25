@@ -14,6 +14,7 @@ import AnalyticsProfileScreen from './screens/AnalyticsProfileScreen';
 import LogisticsScreen from './screens/LogisticsScreen';
 import AIChatScreen from './screens/AIChatScreen';
 import { CheckCircle2, AlertCircle } from 'lucide-react';
+import OfflineBanner from './components/common/OfflineBanner';
 
 function MainApp() {
   const { currentRole, toastMessage } = useApp();
@@ -52,8 +53,10 @@ function MainApp() {
     };
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC] flex flex-col antialiased text-slate-900 selection:bg-emerald-500 selection:text-white">
+    <div className="min-h-screen bg-[#F8FAFC] flex flex-col antialiased text-slate-900 selection:bg-emerald-500 selection:text-white pt-10">
       
+      <OfflineBanner />
+
       {/* Toast Notification Alert */}
       {toastMessage && (
         <div className="fixed top-16 right-4 z-50 animate-bounce">
