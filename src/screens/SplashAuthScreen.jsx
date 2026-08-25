@@ -1,17 +1,47 @@
 import React, { useState } from 'react';
 import { Leaf, ArrowRight, ShieldCheck, UserCheck, Store, Users, Phone, KeyRound, CheckCircle2 } from 'lucide-react';
 import { useApp } from '../context/AppContext';
+import { supabase } from '../utils/supabase';
 
 export default function SplashAuthScreen({ onComplete }) {
   const { switchRole, lang } = useApp();
   const [step, setStep] = useState('auth'); // 'auth' -> 'role'
   const [phone, setPhone] = useState('9876543210');
   const [otp, setOtp] = useState('1234');
-  const [selectedRole, setSelectedRole] = useState('farmer');
+  const [otpSent, setOtpSent] = useState(false);
+  const [loading, setLoading] = useState(false);
 
-  const handleAuthSubmit = (e) => {
+  const handleSendOtp = async (e) => {
     e.preventDefault();
-    setStep('role');
+    setLoading(true);
+    try {
+      const { error } = await supabase.auth.signInWithOtp({ phone: `+91${phone}` });
+      if (error) console.warn('Supabase OTP error (Demo fallback active)', error);
+      setOtpSent(true);
+    } catch (err) {
+      console.error(err);
+      setOtpSent(true);
+    }
+    setLoading(false);
+  };
+
+  const handleVerifyOtp = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    if (otp === '1234') {
+      setStep('role');
+      setLoading(false);
+      return;
+    }
+    try {
+      const { data, error } = await supabase.auth.verifyOtp({ phone: `+91${phone}`, token: otp, type: 'sms' });
+      if (error) throw error;
+      if (data.session) setStep('role');
+    } catch (err) {
+      console.error(err);
+      alert('Invalid OTP');
+    }
+    setLoading(false);
   };
 
   const handleRoleFinish = () => {
@@ -74,46 +104,58 @@ export default function SplashAuthScreen({ onComplete }) {
                 </div>
               </div>
               
-              <form onSubmit={handleAuthSubmit} className="space-y-4">
-                <div>
-                  <label className="block text-xs font-bold uppercase text-slate-500 mb-1.5 ml-1">Mobile Number</label>
-                  <div className="relative">
-                    <Phone className="w-5 h-5 text-slate-400 absolute left-3.5 top-3.5" />
-                    <input
-                      type="text"
-                      value={phone}
-                      onChange={(e) => setPhone(e.target.value)}
-                      className="w-full pl-11 pr-4 py-3.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-emerald-500 focus:outline-none text-sm font-black text-slate-800 bg-slate-50/50"
-                      required
-                    />
+              {!otpSent ? (
+                <form onSubmit={handleSendOtp} className="space-y-4">
+                  <div>
+                    <label className="block text-xs font-bold uppercase text-slate-500 mb-1.5 ml-1">Mobile Number</label>
+                    <div className="relative">
+                      <Phone className="w-5 h-5 text-slate-400 absolute left-3.5 top-3.5" />
+                      <input
+                        type="text"
+                        value={phone}
+                        onChange={(e) => setPhone(e.target.value)}
+                        className="w-full pl-11 pr-4 py-3.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-emerald-500 focus:outline-none text-sm font-black text-slate-800 bg-slate-50/50"
+                        required
+                      />
+                    </div>
                   </div>
-                </div>
+                  <button
+                    type="submit"
+                    disabled={loading}
+                    className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-black py-4 px-4 rounded-xl shadow-md transition tap-active mt-2 flex items-center justify-center gap-2"
+                  >
+                    {loading ? 'Sending...' : 'Send OTP'} <ArrowRight className="w-4 h-4" />
+                  </button>
+                </form>
+              ) : (
+                <form onSubmit={handleVerifyOtp} className="space-y-4">
+                  <div>
+                    <div className="flex items-center justify-between mb-1.5 ml-1">
+                      <label className="block text-xs font-bold uppercase text-slate-500">Verification OTP</label>
+                      <span className="text-[10px] text-emerald-600 font-bold">Demo: 1234</span>
+                    </div>
+                    <div className="relative">
+                      <KeyRound className="w-5 h-5 text-slate-400 absolute left-3.5 top-3.5" />
+                      <input
+                        type="text"
+                        value={otp}
+                        onChange={(e) => setOtp(e.target.value)}
+                        className="w-full pl-11 pr-4 py-3.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-emerald-500 focus:outline-none text-sm font-black text-slate-800 tracking-widest bg-slate-50/50"
+                        maxLength={6}
+                        required
+                      />
+                    </div>
+                  </div>
 
-                <div>
-                  <div className="flex items-center justify-between mb-1.5 ml-1">
-                    <label className="block text-xs font-bold uppercase text-slate-500">Verification OTP</label>
-                    <span className="text-[10px] text-emerald-600 font-bold">Demo: 1234</span>
-                  </div>
-                  <div className="relative">
-                    <KeyRound className="w-5 h-5 text-slate-400 absolute left-3.5 top-3.5" />
-                    <input
-                      type="text"
-                      value={otp}
-                      onChange={(e) => setOtp(e.target.value)}
-                      className="w-full pl-11 pr-4 py-3.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-emerald-500 focus:outline-none text-sm font-black text-slate-800 tracking-widest bg-slate-50/50"
-                      maxLength={4}
-                      required
-                    />
-                  </div>
-                </div>
-
-                <button
-                  type="submit"
-                  className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-black py-4 px-4 rounded-xl shadow-md shadow-emerald-500/20 transition tap-active mt-2 flex items-center justify-center gap-2"
-                >
-                  Verify Securely <ArrowRight className="w-4 h-4" />
-                </button>
-              </form>
+                  <button
+                    type="submit"
+                    disabled={loading}
+                    className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-black py-4 px-4 rounded-xl shadow-md transition tap-active mt-2 flex items-center justify-center gap-2"
+                  >
+                    {loading ? 'Verifying...' : 'Verify Securely'} <ArrowRight className="w-4 h-4" />
+                  </button>
+                </form>
+              )}
             </div>
           ) : (
             <div className="animate-in fade-in slide-in-from-right-4 duration-300">

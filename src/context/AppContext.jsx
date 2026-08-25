@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { INITIAL_USER_PROFILES, INITIAL_PRODUCE_LOTS, INITIAL_BUYER_OFFERS } from '../services/mockData';
 import { calculateNetProfitRecommendations, generateLLMExplanation } from '../services/aiEngine';
+import i18n from '../i18n';
 
 const AppContext = createContext();
 
@@ -31,9 +32,12 @@ export const AppProvider = ({ children }) => {
     showToast(`Switched view to ${newRole.toUpperCase()} mode`);
   };
 
+
+
   const toggleLanguage = () => {
     const nextLang = lang === 'en' ? 'hi' : 'en';
     setLang(nextLang);
+    i18n.changeLanguage(nextLang);
     showToast(nextLang === 'hi' ? 'भाषा बदलकर हिंदी कर दी गई है' : 'Language set to English');
   };
 

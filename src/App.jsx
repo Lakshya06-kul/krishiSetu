@@ -15,6 +15,7 @@ import LogisticsScreen from './screens/LogisticsScreen';
 import AIChatScreen from './screens/AIChatScreen';
 import { CheckCircle2, AlertCircle } from 'lucide-react';
 import OfflineBanner from './components/common/OfflineBanner';
+import VoiceFAB from './components/common/VoiceFAB';
 
 function MainApp() {
   const { currentRole, toastMessage } = useApp();
@@ -74,6 +75,8 @@ function MainApp() {
       <main className="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 md:p-8">
         {renderScreen()}
       </main>
+
+      <VoiceFAB />
 
       {/* Mobile Bottom Navigation */}
       <BottomNav activeScreen={activeScreen} setScreen={setActiveScreen} />
