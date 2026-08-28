@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useApp } from '../context/AppContext';
 import { Bot, Send, ArrowLeft, Mic, ShieldCheck, Link2, Sparkles, StopCircle, RefreshCw } from 'lucide-react';
-import { getAIResponse } from '../services/aiService';
+import { chat } from '../services/aiService';
 
 export default function AIChatScreen({ setScreen }) {
   const { lang, userProfile } = useApp();
@@ -71,7 +71,28 @@ export default function AIChatScreen({ setScreen }) {
     setIsTyping(true);
 
     // Call actual AI Service
-    const aiResponse = await getAIResponse(userMessageText, lang);
+    let aiResponse;
+    try {
+      const chatRes = await chat(userMessageText);
+      aiResponse = {
+        id: Date.now(),
+        sender: 'ai',
+        structured: true,
+        marketResponse: chatRes?.marketResponse || "AI Response",
+        answer: chatRes?.answer || (chatRes?.text || "I couldn't process the answer properly."),
+        credibilityScore: chatRes?.credibilityScore || "80%",
+        sources: chatRes?.sources || ["AgriLink Knowledge Base"],
+        recommendation: chatRes?.recommendation || "Consult local experts."
+      };
+    } catch (err) {
+      aiResponse = {
+        id: Date.now(),
+        sender: "ai",
+        text: "Sorry, I am having trouble connecting to my AI brain right now. " + err.message,
+        isError: true,
+      };
+    }
+    
     setIsTyping(false);
     setMessages((prev) => [...prev, aiResponse]);
   };
