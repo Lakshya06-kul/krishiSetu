@@ -65,7 +65,7 @@ export default function AIChatScreen({ setScreen }) {
     if (!input.trim()) return;
 
     const userMessageText = input.trim();
-    const userMessage = { id: Date.now(), sender: 'user', text: userMessageText };
+    const userMessage = { id: crypto.randomUUID(), sender: 'user', text: userMessageText };
     setMessages((prev) => [...prev, userMessage]);
     setInput('');
     setIsTyping(true);
@@ -75,7 +75,7 @@ export default function AIChatScreen({ setScreen }) {
     try {
       const chatRes = await chat(userMessageText);
       aiResponse = {
-        id: Date.now(),
+        id: crypto.randomUUID(),
         sender: 'ai',
         structured: true,
         marketResponse: chatRes?.marketResponse || "AI Response",
@@ -86,7 +86,7 @@ export default function AIChatScreen({ setScreen }) {
       };
     } catch (err) {
       aiResponse = {
-        id: Date.now(),
+        id: crypto.randomUUID(),
         sender: "ai",
         text: "Sorry, I am having trouble connecting to my AI brain right now. " + err.message,
         isError: true,
