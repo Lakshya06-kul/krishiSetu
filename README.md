@@ -252,7 +252,8 @@ KrishiSetu-Ai/
   - [x] *Step 6.2*: Biometric AI Crop Scanner (Animated laser beam overlay with dynamic computer vision bounding boxes).
   - [x] *Step 6.3*: Interactive GIS Route Map (Leaflet highway path, mileage, transit duration, and toll/fuel calculator).
   - [x] *Step 6.4*: Official APMC Digital Gate Pass (Authenticated rubber stamp watermark, realistic SVG barcode, SHA-256 seal).
-  - [x] *Step 6.5*: Web Audio Payment Chime (Celebratory major arpeggio confirmation sound upon payment).
+  - [x] *Step 6.5*: Web Audio Payment Chime (Celebratory major arpeggio confirmation tone upon payment).
+  - [x] *Step 6.6*: Commercial-Grade Login Portal (Glassmorphic authentication card, 1-click evaluator demo logins, interactive role picker, and dynamic social proof).
 - [ ] **Step 7: Real-time WebSockets** (Instant bid notifications via Socket.io/Pusher).
 
 ---

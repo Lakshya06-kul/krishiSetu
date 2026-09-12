@@ -67,6 +67,8 @@ This document outlines high-impact enhancements, features, and production milest
   - Upgrade the e-Bilty modal into a formal printable invoice with barcode graphics, digital verification seals, and an authentic green "VERIFIED BY KRISHISETU SMART ESCROW" rubber stamp graphic.
 - [x] **Step 6.5: Haptic Audio & Celebratory Soundbox Notifications**
   - Integrate sound cues and simulated UPI soundbox chime feedback (*"₹16,250 received in KrishiSetu Escrow"*) upon accepting offers and confirming payment gateway settlements.
+- [x] **Step 6.6: Commercial-Grade Login & Onboarding Portal**
+  - Redesign authentication interface with modern glassmorphism, 1-click evaluator demo logins, rich interactive role selector cards, and live social proof metrics.
 
 ---
 
