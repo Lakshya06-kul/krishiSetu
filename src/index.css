@@ -82,3 +82,42 @@ button, input, select, a {
   background: linear-gradient(135deg, #16A34A 0%, #15803D 60%, #047857 100%);
   color: #FFFFFF;
 }
+
+/* Continuous Marquee Ticker for Commodity Prices */
+@keyframes marquee {
+  0% {
+    transform: translateX(0%);
+  }
+  100% {
+    transform: translateX(-100%);
+  }
+}
+
+.animate-marquee {
+  display: inline-flex;
+  animation: marquee 32s linear infinite;
+}
+
+.animate-marquee:hover {
+  animation-play-state: paused;
+}
+
+/* Biometric AI Crop Scanner Laser Animation */
+@keyframes scannerLaser {
+  0% {
+    top: 0%;
+    opacity: 0.8;
+  }
+  50% {
+    top: 96%;
+    opacity: 1;
+  }
+  100% {
+    top: 0%;
+    opacity: 0.8;
+  }
+}
+
+.animate-scanner-laser {
+  animation: scannerLaser 2s ease-in-out infinite;
+}

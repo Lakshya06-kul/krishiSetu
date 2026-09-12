@@ -7,6 +7,7 @@ import { gradeProduceWithAI } from '../services/visionAiService';
 import { CROPS_CATALOG, getCropImages } from '../services/mockData';
 import { Sparkles, MapPin, Calendar, CheckCircle2, ArrowRight, ArrowLeft, RefreshCw, ShieldCheck } from 'lucide-react';
 import confetti from 'canvas-confetti';
+import BiometricCropScanner from '../components/common/BiometricCropScanner';
 
 export default function CreateLotScreen({ setScreen, goBack }) {
   const { addProduceLot, lang } = useApp();
@@ -26,6 +27,7 @@ export default function CreateLotScreen({ setScreen, goBack }) {
   // AI Quality analysis state
   const [aiReport, setAiReport] = useState(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [scanImagePreview, setScanImagePreview] = useState('');
 
   const handleCropChange = (newCrop) => {
     setCrop(newCrop);
@@ -36,6 +38,7 @@ export default function CreateLotScreen({ setScreen, goBack }) {
   const handleRunAIQuality = async () => {
     // If user didn't upload any photos, automatically supply default photos for the chosen crop
     const effectiveImages = images.length > 0 ? images : getCropImages(crop);
+    setScanImagePreview(effectiveImages[0] || '');
 
     setIsAnalyzing(true);
     try {
@@ -44,10 +47,12 @@ export default function CreateLotScreen({ setScreen, goBack }) {
       if (images.length === 0) {
         setImages(effectiveImages);
       }
-      setIsAnalyzing(false);
-      setStep(2);
-      // Trigger subtle celebration confetti
-      confetti({ particleCount: 60, spread: 60, origin: { y: 0.6 } });
+      // Keep scanner visible for 2.2 seconds to display laser analysis
+      setTimeout(() => {
+        setIsAnalyzing(false);
+        setStep(2);
+        confetti({ particleCount: 60, spread: 60, origin: { y: 0.6 } });
+      }, 2300);
     } catch (err) {
       console.error('Grading error:', err);
       const fallbackResult = analyzeProduceQuality(crop, effectiveImages, qualityNotes);
@@ -55,8 +60,10 @@ export default function CreateLotScreen({ setScreen, goBack }) {
       if (images.length === 0) {
         setImages(effectiveImages);
       }
-      setIsAnalyzing(false);
-      setStep(2);
+      setTimeout(() => {
+        setIsAnalyzing(false);
+        setStep(2);
+      }, 2300);
     }
   };
 
@@ -351,6 +358,13 @@ export default function CreateLotScreen({ setScreen, goBack }) {
 
         </div>
       )}
+
+      {/* Biometric AI Crop Laser Scanner Overlay */}
+      <BiometricCropScanner
+        isScanning={isAnalyzing}
+        imageSrc={scanImagePreview}
+        cropName={crop}
+      />
 
     </div>
   );

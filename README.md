@@ -207,11 +207,14 @@ KrishiSetu-Ai/
 ├── src/
 │   ├── components/
 │   │   ├── cards/
-│   │   │   ├── BuyerCard.jsx       # Offer management & Gateway Modal
+│   │   │   ├── BuyerCard.jsx       # Offer management, Gateway Modal & Official APMC Pass
 │   │   │   ├── LotCard.jsx
 │   │   │   └── MarketCard.jsx
 │   │   └── common/
 │   │       ├── Header.jsx          # Role switcher & language selector
+│   │       ├── CommodityTicker.jsx # Live marquee mandi rate ribbon
+│   │       ├── BiometricCropScanner.jsx # Laser beam & CV quality scanner
+│   │       ├── LogisticsRouteMap.jsx    # Interactive Leaflet GIS route map
 │   │       └── VoiceFAB.jsx        # Floating voice assistant
 │   ├── screens/
 │   │   ├── AIChatScreen.jsx        # Farm Advisor ChatGPT-style AI
@@ -220,12 +223,13 @@ KrishiSetu-Ai/
 │   │   ├── BuyerMarketplaceScreen.jsx
 │   │   ├── CreateLotScreen.jsx     # Produce upload & image diagnosis
 │   │   ├── FarmerDashboardScreen.jsx
-│   │   └── LogisticsScreen.jsx
+│   │   └── LogisticsScreen.jsx     # Fleet directory & transit router
 │   ├── context/
 │   │   └── AppContext.jsx          # Global state & Escrow business logic
 │   ├── services/
 │   │   ├── aiEngine.js             # Profit optimization engine
 │   │   ├── aiService.js            # Regional LLM prompt generator
+│   │   ├── soundboxService.js      # Web Audio celebratory confirmation chime
 │   │   └── mockData.js             # Mock seed data & crop asset resolver
 │   ├── App.jsx
 │   └── main.jsx
@@ -243,7 +247,13 @@ KrishiSetu-Ai/
 - [x] **Step 3: Buyer Marketplace & Multi-Turn Price Negotiations**.
 - [x] **Step 4: Smart Escrow Protocol** (50% buyer advance via payment gateway + remaining 50% locked until gate receipt).
 - [x] **Step 5: Cloud Database Sync** (MongoDB Atlas cluster integration with Mongoose ODM).
-- [ ] **Step 6: Real-time WebSockets** (Instant bid notifications via Socket.io/Pusher).
+- [x] **Step 6: Commercial-Grade UI/UX & Visual Polish**:
+  - [x] *Step 6.1*: Live Commodity Ticker Ribbon (Continuous animated marquee showing real-time mandi prices).
+  - [x] *Step 6.2*: Biometric AI Crop Scanner (Animated laser beam overlay with dynamic computer vision bounding boxes).
+  - [x] *Step 6.3*: Interactive GIS Route Map (Leaflet highway path, mileage, transit duration, and toll/fuel calculator).
+  - [x] *Step 6.4*: Official APMC Digital Gate Pass (Authenticated rubber stamp watermark, realistic SVG barcode, SHA-256 seal).
+  - [x] *Step 6.5*: Web Audio Payment Chime (Celebratory major arpeggio confirmation sound upon payment).
+- [ ] **Step 7: Real-time WebSockets** (Instant bid notifications via Socket.io/Pusher).
 
 ---
 

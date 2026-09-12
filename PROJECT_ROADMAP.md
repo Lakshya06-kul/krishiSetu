@@ -56,4 +56,18 @@ This document outlines high-impact enhancements, features, and production milest
 
 ---
 
+## 6. Commercial-Grade UI/UX & Visual Polish
+- [x] **Step 6.1: Live Commodity Ticker Ribbon (Stock Market Style)**
+  - Add an animated marquee ticker bar right below the top navigation showcasing real-time mandi price fluctuations across states (`🍅 Tomatoes: ₹34.50 (+4.2%) ▲`, `🧅 Nashik Onions: ₹28.00 (-1.5%) ▼`, etc.).
+- [x] **Step 6.2: Biometric AI Crop Scanner Laser Animation**
+  - Add an animated green scanner beam overlay with computer vision bounding boxes (`[Freshness: 94%]`, `[Surface Defects: 0%]`, `[Certified Grade: A+]`) during produce lot image uploads.
+- [x] **Step 6.3: Interactive Logistics Route Map Visualization**
+  - Render an interactive route preview connecting the farmer's geolocation to destination mandis, displaying real-time mileage, estimated travel duration, and toll/fuel breakdown pins.
+- [x] **Step 6.4: Official APMC-Grade Digital Gate Pass with Rubber Stamp & Barcode**
+  - Upgrade the e-Bilty modal into a formal printable invoice with barcode graphics, digital verification seals, and an authentic green "VERIFIED BY KRISHISETU SMART ESCROW" rubber stamp graphic.
+- [x] **Step 6.5: Haptic Audio & Celebratory Soundbox Notifications**
+  - Integrate sound cues and simulated UPI soundbox chime feedback (*"₹16,250 received in KrishiSetu Escrow"*) upon accepting offers and confirming payment gateway settlements.
+
+---
+
 *Generated for KrishiSetu-Ai — Empowering Farmers with AI.*

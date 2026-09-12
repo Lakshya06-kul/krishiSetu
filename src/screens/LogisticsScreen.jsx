@@ -2,9 +2,14 @@ import React from 'react';
 import { useApp } from '../context/AppContext';
 import { Truck, MapPin, Navigation, ArrowLeft, Fuel } from 'lucide-react';
 import { TRANSPORT_VEHICLES } from '../services/mockData';
+import LogisticsRouteMap from '../components/common/LogisticsRouteMap';
 
 export default function LogisticsScreen({ setScreen, goBack }) {
-  const { lang } = useApp();
+  const { lang, userProfile } = useApp();
+
+  const farmerCoords = userProfile?.coordinates 
+    ? [userProfile.coordinates.lat, userProfile.coordinates.lng] 
+    : [11.0168, 76.9558];
 
   return (
     <div className="max-w-4xl mx-auto space-y-6 pb-20 md:pb-8">
@@ -18,6 +23,12 @@ export default function LogisticsScreen({ setScreen, goBack }) {
         </button>
       </div>
 
+      {/* Interactive GIS Route Map Visualization */}
+      <LogisticsRouteMap
+        farmerCoords={farmerCoords}
+        farmerAddress={userProfile?.location || 'Coimbatore Suburb, TN'}
+      />
+
       <div className="bg-white rounded-[24px] p-6 sm:p-8 border border-slate-200/80 shadow-soft">
         <div className="flex items-center gap-3 mb-4">
           <div className="p-3 bg-emerald-100 text-emerald-700 rounded-xl">
@@ -25,12 +36,12 @@ export default function LogisticsScreen({ setScreen, goBack }) {
           </div>
           <div>
             <h2 className="text-2xl font-black text-slate-900 tracking-tight">
-              {lang === 'hi' ? 'लॉजिस्टिक्स और परिवहन' : 'Logistics & Transport'}
+              {lang === 'hi' ? 'परिवहन फ्लीट विकल्प' : 'Fleet & Freight Vehicle Directory'}
             </h2>
             <p className="text-xs text-slate-500 font-medium">
               {lang === 'hi' 
                 ? 'अपनी उपज के लिए सबसे अच्छा परिवहन विकल्प चुनें।' 
-                : 'Select the best transport option for your produce.'}
+                : 'Verified local transport partners ready for instant mandi dispatch.'}
             </p>
           </div>
         </div>
@@ -50,8 +61,11 @@ export default function LogisticsScreen({ setScreen, goBack }) {
                   <span>Cost/km/ton:</span> <span className="font-bold">₹{vehicle.costPerKmPerKg * 100}</span>
                 </li>
               </ul>
-              <button className="mt-4 w-full bg-white border border-emerald-600 text-emerald-700 font-bold text-xs py-2 rounded-lg hover:bg-emerald-50 transition">
-                {lang === 'hi' ? 'चुनें' : 'Select'}
+              <button 
+                onClick={() => setScreen('market_comparison')}
+                className="mt-4 w-full bg-white border border-emerald-600 text-emerald-700 font-bold text-xs py-2 rounded-lg hover:bg-emerald-50 transition"
+              >
+                {lang === 'hi' ? 'रूट पर तुलना करें' : 'Optimize Route for this Vehicle'}
               </button>
             </div>
           ))}

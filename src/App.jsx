@@ -16,6 +16,7 @@ import AIChatScreen from './screens/AIChatScreen';
 import { CheckCircle2, AlertCircle } from 'lucide-react';
 import OfflineBanner from './components/common/OfflineBanner';
 import VoiceFAB from './components/common/VoiceFAB';
+import CommodityTicker from './components/common/CommodityTicker';
 
 function MainApp() {
   const { currentRole, toastMessage } = useApp();
@@ -72,27 +73,30 @@ function MainApp() {
   };
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC] flex flex-col antialiased text-slate-900 selection:bg-emerald-500 selection:text-white pt-10">
+    <div className="min-h-screen bg-[#F8FAFC] flex flex-col antialiased text-slate-900 selection:bg-emerald-500 selection:text-white">
       
       <OfflineBanner />
 
+      {/* Sticky Header + Live Mandi Ribbon */}
+      <div className="sticky top-0 z-40 bg-white/95 backdrop-blur-md">
+        <Header 
+          currentScreen={activeScreen} 
+          setScreen={navigateTo} 
+          goBack={goBack} 
+          canGoBack={screenHistory.length > 1 || activeScreen !== 'dashboard'} 
+        />
+        <CommodityTicker />
+      </div>
+
       {/* Toast Notification Alert */}
       {toastMessage && (
-        <div className="fixed top-16 right-4 z-50 animate-bounce">
+        <div className="fixed top-24 right-4 z-50 animate-bounce">
           <div className="bg-slate-900 text-white text-xs font-extrabold px-4 py-3 rounded-2xl shadow-large border border-slate-700 flex items-center gap-2">
             <CheckCircle2 className="w-4 h-4 text-emerald-400" />
             <span>{toastMessage.message}</span>
           </div>
         </div>
       )}
-
-      {/* Main App Header */}
-      <Header 
-        currentScreen={activeScreen} 
-        setScreen={navigateTo} 
-        goBack={goBack} 
-        canGoBack={screenHistory.length > 1 || activeScreen !== 'dashboard'} 
-      />
 
       {/* Main Screen Content Body */}
       <main className="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 md:p-8">

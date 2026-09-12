@@ -71,14 +71,23 @@ export default function FarmerDashboardScreen({ setScreen }) {
           </p>
         </div>
 
-        {/* Primary CTA: Upload Produce */}
-        <button
-          onClick={() => setScreen('create_lot')}
-          className="bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-sm py-3 px-5 rounded-[14px] shadow-md transition tap-active flex items-center gap-2"
-        >
-          <PlusCircle className="w-5 h-5" />
-          <span>{t('Upload Produce Lot')}</span>
-        </button>
+        {/* Primary CTAs: Upload Produce & Logistics Map */}
+        <div className="flex items-center gap-2.5">
+          <button
+            onClick={() => setScreen('logistics')}
+            className="bg-slate-900 hover:bg-slate-800 text-white font-extrabold text-xs sm:text-sm py-3 px-4 rounded-[14px] shadow-sm transition tap-active flex items-center gap-1.5"
+          >
+            <span>🚚</span>
+            <span>{lang === 'hi' ? 'परिवहन मैप' : 'Logistics Map'}</span>
+          </button>
+          <button
+            onClick={() => setScreen('create_lot')}
+            className="bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs sm:text-sm py-3 px-5 rounded-[14px] shadow-md transition tap-active flex items-center gap-2"
+          >
+            <PlusCircle className="w-5 h-5" />
+            <span>{t('Upload Produce Lot')}</span>
+          </button>
+        </div>
       </div>
 
       {/* AI Recommendation Hero Card (Core USP - Section 1.5) */}

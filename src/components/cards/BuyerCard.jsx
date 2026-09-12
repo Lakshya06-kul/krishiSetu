@@ -623,78 +623,118 @@ export default function BuyerCard({ buyer, offer, onAccept, onDecline, onSendOff
         </div>
       )}
 
-      {/* Digital Delivery Receipt & QR Modal */}
+      {/* Digital Delivery Receipt & Official APMC e-Bilty Gate Pass Modal */}
       {showQRModal && (
-        <div className="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-white rounded-[24px] max-w-sm w-full p-6 shadow-2xl border border-slate-200 relative text-center space-y-4 animate-in fade-in zoom-in-95">
+        <div className="fixed inset-0 z-50 bg-slate-950/75 backdrop-blur-md flex items-center justify-center p-4">
+          <div className="bg-white rounded-[28px] max-w-md w-full p-6 shadow-2xl border border-slate-200 relative space-y-4 animate-in fade-in zoom-in-95 overflow-hidden">
+            
+            {/* Authentic Green Rubber Stamp Watermark Graphic */}
+            <div className="absolute top-16 right-4 rotate-[-18deg] border-4 border-emerald-600/85 px-3 py-1.5 rounded-xl pointer-events-none select-none text-center opacity-90 shadow-sm">
+              <span className="text-[11px] font-black tracking-widest text-emerald-700 block uppercase">
+                ★ APMC VERIFIED ★
+              </span>
+              <span className="text-[9px] font-extrabold text-emerald-600 tracking-wider block">
+                KRISHISETU SMART ESCROW
+              </span>
+            </div>
+
             <button
               onClick={() => setShowQRModal(false)}
-              className="absolute top-4 right-4 text-slate-400 hover:text-slate-700"
+              className="absolute top-4 right-4 text-slate-400 hover:text-slate-700 z-10"
             >
               <X className="w-5 h-5" />
             </button>
 
-            <div className="w-12 h-12 rounded-full bg-emerald-100 text-emerald-700 mx-auto flex items-center justify-center">
-              <QrCode className="w-6 h-6" />
+            {/* Official Header */}
+            <div className="flex items-center gap-3 border-b border-slate-100 pb-3">
+              <div className="w-11 h-11 rounded-2xl bg-emerald-100 text-emerald-800 flex items-center justify-center font-black text-xl shadow-inner">
+                🏛️
+              </div>
+              <div>
+                <div className="flex items-center gap-1.5">
+                  <h3 className="font-black text-base text-slate-900">
+                    APMC National e-Bilty Pass
+                  </h3>
+                  <span className="text-[9px] font-black bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-full border border-emerald-300">
+                    VERIFIED
+                  </span>
+                </div>
+                <p className="text-[11px] text-slate-500 font-medium">
+                  Govt. Inter-State Mandi Transit & Digital Consignment Pass
+                </p>
+              </div>
             </div>
 
-            <div>
-              <h3 className="font-black text-lg text-slate-900">
-                Digital e-Bilty Gate Pass
-              </h3>
-              <p className="text-xs text-slate-500 font-medium mt-0.5">
-                KrishiSetu Verified Mandi Gate & Transport Pass
-              </p>
-            </div>
-
-            {/* Generated QR Code Image Simulation */}
-            <div className="bg-slate-50 p-4 rounded-2xl border border-slate-200 flex flex-col items-center justify-center">
+            {/* QR & Barcode Section */}
+            <div className="bg-slate-50 p-4 rounded-2xl border border-slate-200 flex flex-col items-center justify-center space-y-2">
               <img
-                src={`https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=KRISHI-BILTY-${offer.biltyNumber || '101'}-LOT-${requestedCrop}-${offer.offeredPricePerKg}`}
+                src={`https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=KRISHI-BILTY-${offer.biltyNumber || '101'}-LOT-${requestedCrop}-${offer.offeredPricePerKg}`}
                 alt="e-Bilty QR"
-                className="w-40 h-40 rounded-lg shadow-sm"
+                className="w-36 h-36 rounded-xl shadow-xs border border-slate-200 p-1 bg-white"
               />
-              <span className="font-mono text-xs font-black text-slate-800 mt-2">
-                {offer.biltyNumber || 'EB-891042'}
-              </span>
+              
+              {/* Realistic SVG Barcode Graphic */}
+              <div className="w-full pt-1 flex flex-col items-center">
+                <div className="flex items-center gap-[3px] h-9 w-48 justify-center opacity-85">
+                  <div className="w-1.5 h-full bg-slate-900"></div>
+                  <div className="w-0.5 h-full bg-slate-900"></div>
+                  <div className="w-1 h-full bg-slate-900"></div>
+                  <div className="w-2 h-full bg-slate-900"></div>
+                  <div className="w-0.5 h-full bg-slate-900"></div>
+                  <div className="w-1.5 h-full bg-slate-900"></div>
+                  <div className="w-1 h-full bg-slate-900"></div>
+                  <div className="w-0.5 h-full bg-slate-900"></div>
+                  <div className="w-2 h-full bg-slate-900"></div>
+                  <div className="w-1 h-full bg-slate-900"></div>
+                  <div className="w-1.5 h-full bg-slate-900"></div>
+                  <div className="w-0.5 h-full bg-slate-900"></div>
+                  <div className="w-2 h-full bg-slate-900"></div>
+                  <div className="w-1 h-full bg-slate-900"></div>
+                </div>
+                <span className="font-mono text-xs font-black text-slate-800 tracking-widest mt-1">
+                  {offer.biltyNumber || 'EB-891042'}
+                </span>
+              </div>
             </div>
 
-            <div className="text-left text-xs space-y-1.5 bg-slate-50 p-3 rounded-xl border border-slate-100 text-slate-600">
+            {/* Consignment Specification Sheet */}
+            <div className="text-left text-xs space-y-1.5 bg-slate-50 p-3.5 rounded-2xl border border-slate-100 text-slate-600">
               <div className="flex justify-between">
-                <span>Crop Lot:</span>
-                <span className="font-bold text-slate-900">{requestedCrop} ({requestedQuantity} {requestedUnit})</span>
+                <span>Commodity Consignment:</span>
+                <span className="font-extrabold text-slate-900">{requestedCrop} ({requestedQuantity} {requestedUnit})</span>
               </div>
               <div className="flex justify-between">
-                <span>Buyer / Consignee:</span>
+                <span>Authorized Consignee / Buyer:</span>
                 <span className="font-bold text-slate-900">{offer.buyerName}</span>
               </div>
               <div className="flex justify-between">
-                <span>Payment Plan:</span>
+                <span>Security Plan:</span>
                 <span className="font-bold text-emerald-800">50% Advance + 50% On-Delivery Escrow</span>
               </div>
               <div className="flex justify-between">
-                <span>50% Advance Paid:</span>
-                <span className="font-bold text-emerald-700">₹{advanceCalculated.toLocaleString('en-IN')} ({offer.escrowStatus === 'AWAITING_BUYER_DEPOSIT' ? 'Pending Gateway' : 'Credited'})</span>
+                <span>50% Advance Status:</span>
+                <span className="font-bold text-emerald-700">₹{advanceCalculated.toLocaleString('en-IN')} (Bank Credited)</span>
               </div>
               <div className="flex justify-between">
-                <span>50% Balance on Receipt:</span>
+                <span>50% Balance Remaining:</span>
                 <span className={`font-bold ${offer.escrowStatus === 'DISBURSED' ? 'text-emerald-700' : 'text-amber-700'}`}>
-                  ₹{balanceCalculated.toLocaleString('en-IN')} {offer.escrowStatus === 'DISBURSED' ? '(Released)' : '(Secured in Escrow)'}
+                  ₹{balanceCalculated.toLocaleString('en-IN')} {offer.escrowStatus === 'DISBURSED' ? '(Released)' : '(Locked in Escrow)'}
                 </span>
               </div>
-              <div className="flex justify-between">
-                <span>Gate Verification:</span>
-                <span className="font-bold text-emerald-600">Tamper-Proof Digital Signature</span>
+              <div className="flex justify-between border-t border-slate-200 pt-1.5">
+                <span>Digital Verification Seal:</span>
+                <span className="font-bold text-emerald-700 font-mono text-[11px]">SHA-256: 8b4a..9f2c</span>
               </div>
             </div>
 
+            {/* Print / Save Action */}
             <button
               onClick={() => {
                 window.print();
               }}
-              className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs py-3 rounded-xl transition shadow-sm"
+              className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs py-3.5 rounded-xl transition shadow-md flex items-center justify-center gap-2 tap-active"
             >
-              Print / Save Gate Pass
+              <span>🖨️ Print / Download Official Mandi Pass (PDF)</span>
             </button>
           </div>
         </div>

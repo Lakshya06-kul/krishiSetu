@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { INITIAL_USER_PROFILES, INITIAL_PRODUCE_LOTS, INITIAL_BUYER_OFFERS, getCropImages } from '../services/mockData';
 import { calculateNetProfitRecommendations, generateLLMExplanation } from '../services/aiEngine';
+import { soundbox } from '../services/soundboxService';
 import i18n from '../i18n';
 
 const AppContext = createContext();
@@ -148,6 +149,11 @@ export const AppProvider = ({ children }) => {
       }
       return off;
     }));
+    // Trigger celebratory audio chime & simulated soundbox announcement
+    const targetOffer = buyerOffers.find(o => o.id === offerId);
+    const advanceAmountAnnounce = targetOffer ? Math.round((targetOffer.totalAmount || 32500) * 0.5) : 16250;
+    soundbox.announcePayment(advanceAmountAnnounce.toLocaleString('en-IN'), lang);
+
     showToast(lang === 'hi' 
       ? 'भुगतान सफल! 50% अग्रिम राशि किसान को स्थानांतरित, शेष 50% एस्क्रो में सुरक्षित।' 
       : 'Payment Successful! 50% advance transferred to farmer; remaining 50% locked in escrow.');
