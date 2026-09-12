@@ -48,6 +48,40 @@ export const CROPS_CATALOG = [
   { id: 'carrots', name: 'Ooty Carrots', nameHi: 'गाजर', icon: '🥕', avgPrice: 42, unit: 'kg' }
 ];
 
+export const CROP_DEFAULT_PHOTOS = {
+  tomatoes: [
+    'https://images.unsplash.com/photo-1592924357228-91a4daadcfea?w=500&auto=format&fit=crop&q=80',
+    'https://images.unsplash.com/photo-1518977676601-b53f82aba655?w=500&auto=format&fit=crop&q=80',
+    'https://images.unsplash.com/photo-1546470427-e26264be0b11?w=500&auto=format&fit=crop&q=80'
+  ],
+  onions: [
+    'https://images.unsplash.com/photo-1618512496248-a07fe83aa8cb?w=500&auto=format&fit=crop&q=80',
+    'https://images.unsplash.com/photo-1587049352846-4a222e784d38?w=500&auto=format&fit=crop&q=80'
+  ],
+  potatoes: [
+    'https://images.unsplash.com/photo-1518977676601-b53f82aba655?w=500&auto=format&fit=crop&q=80',
+    'https://images.unsplash.com/photo-1508747703725-719777637510?w=500&auto=format&fit=crop&q=80'
+  ],
+  cauliflower: [
+    'https://images.unsplash.com/photo-1568584711075-3d021a7c3ca3?w=500&auto=format&fit=crop&q=80',
+    'https://images.unsplash.com/photo-1615485290382-441e4d049cb5?w=500&auto=format&fit=crop&q=80'
+  ],
+  carrots: [
+    'https://images.unsplash.com/photo-1598170845058-32b9d6a5da37?w=500&auto=format&fit=crop&q=80',
+    'https://images.unsplash.com/photo-1447175008436-054170c2e979?w=500&auto=format&fit=crop&q=80'
+  ]
+};
+
+export function getCropImages(cropName) {
+  if (!cropName) return CROP_DEFAULT_PHOTOS.tomatoes;
+  const lower = cropName.toLowerCase();
+  if (lower.includes('cauliflower') || lower.includes('गोभी') || lower.includes('फूलगोभी')) return CROP_DEFAULT_PHOTOS.cauliflower;
+  if (lower.includes('onion') || lower.includes('प्याज')) return CROP_DEFAULT_PHOTOS.onions;
+  if (lower.includes('potato') || lower.includes('आलू')) return CROP_DEFAULT_PHOTOS.potatoes;
+  if (lower.includes('carrot') || lower.includes('गाजर')) return CROP_DEFAULT_PHOTOS.carrots;
+  return CROP_DEFAULT_PHOTOS.tomatoes;
+}
+
 export const MANDIS_DATABASE = [
   { id: 'mandi_1', name: 'Coimbatore Mandi', nameHi: 'कोयंबटूर मंडी', distanceKm: 42, baseTransportCostPerKg: 2.6, handlingCostPerKg: 1.5, todayPricePerKg: 31.0, forecastDay2: 34.0, forecastDay3: 35.2, demandLevel: 'High', demandIndex: 92, arrivalVolumeTons: 420, coordinates: [11.0168, 76.9558] },
   { id: 'mandi_2', name: 'Madurai Mandi', nameHi: 'मदुरै मंडी', distanceKm: 128, baseTransportCostPerKg: 4.8, handlingCostPerKg: 1.5, todayPricePerKg: 33.0, forecastDay2: 34.5, forecastDay3: 33.8, demandLevel: 'Medium', demandIndex: 81, arrivalVolumeTons: 610, coordinates: [9.9252, 78.1198] },
@@ -150,6 +184,9 @@ export const INITIAL_BUYER_OFFERS = [
   {
     id: 'off_201',
     lotId: 'lot_101',
+    crop: 'Tomatoes',
+    quantity: 1000,
+    unit: 'kg',
     buyerId: 'usr_buyer_1',
     buyerName: 'Priya Foods Pvt. Ltd.',
     buyerAvatar: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=150&auto=format&fit=crop&q=80',
@@ -163,6 +200,9 @@ export const INITIAL_BUYER_OFFERS = [
   {
     id: 'off_202',
     lotId: 'lot_101',
+    crop: 'Tomatoes',
+    quantity: 1000,
+    unit: 'kg',
     buyerId: 'usr_buyer_2',
     buyerName: 'FreshDirect Hypermarket',
     buyerAvatar: 'https://images.unsplash.com/photo-1560250097-0b93528c311a?w=150&auto=format&fit=crop&q=80',

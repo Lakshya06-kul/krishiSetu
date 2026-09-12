@@ -117,10 +117,55 @@ export function generateLLMExplanation(recommendation, cropName = 'Tomatoes', la
 
   if (lang === 'hi') {
     return {
-      title: `${bestMandi.nameHi} में ${recommendedDaysWait} दिन बाद बेचें`,
+      title: `${bestMandi.nameHi || bestMandi.name} में ${recommendedDaysWait} दिन बाद बेचें`,
       subtitle: `अनुमानित शुद्ध लाभ: ₹${bestMandi.netProfitPerKg}/किग्रा`,
-      body: `${cropName} की कीमतें कम आवक के कारण ${bestMandi.nameHi} में ₹${bestMandi.forecastPrice}/किग्रा तक बढ़ने की उम्मीद है। परिवहन और हैंडलिंग लागत में कटौती के बाद आपका शुद्ध लाभ ₹${bestMandi.netProfitPerKg}/किग्रा होगा। निकटतम मंडी की तुलना में ₹${extraEarnings.toLocaleString('hi-IN')} अतिरिक्त कमाएं।`,
+      body: `${cropName} की कीमतें कम आवक के कारण ${bestMandi.nameHi || bestMandi.name} में ₹${bestMandi.forecastPrice}/किग्रा तक बढ़ने की उम्मीद है। परिवहन और हैंडलिंग लागत में कटौती के बाद आपका शुद्ध लाभ ₹${bestMandi.netProfitPerKg}/किग्रा होगा। निकटतम मंडी की तुलना में ₹${extraEarnings.toLocaleString('hi-IN')} अतिरिक्त कमाएं।`,
       confidenceBadge: `${confidence}% विश्वास`
+    };
+  }
+
+  if (lang === 'ta') {
+    return {
+      title: `${bestMandi.name} சந்தையில் ${recommendedDaysWait} நாட்களுக்குப் பிறகு விற்கவும்`,
+      subtitle: `எதிர்பார்க்கப்படும் நிகர லாபம்: ₹${bestMandi.netProfitPerKg}/கிலோ`,
+      body: `${cropName} விலை ${bestMandi.name} சந்தையில் ₹${bestMandi.forecastPrice}/கிலோ வரை உயரும் என எதிர்பார்க்கப்படுகிறது. போக்குவரத்து செலவு கழித்த பின் உங்கள் நிகர லாபம் ₹${bestMandi.netProfitPerKg}/கிலோ. அருகில் உள்ள சந்தையை விட ₹${extraEarnings.toLocaleString('en-IN')} கூடுதல் லாபம் பெறுங்கள்.`,
+      confidenceBadge: `${confidence}% நம்பிக்கை`
+    };
+  }
+
+  if (lang === 'te') {
+    return {
+      title: `${bestMandi.name} లో ${recommendedDaysWait} రోజుల తర్వాత అమ్మండి`,
+      subtitle: `అంచనా వేసిన నికర లాభం: ₹${bestMandi.netProfitPerKg}/కిలో`,
+      body: `${cropName} ధరలు ${bestMandi.name} లో ₹${bestMandi.forecastPrice}/కిలో వరకు పెరుగుతాయని అంచనా. రవాణా ఖర్చులను మినహాయించిన తర్వాత మీ నికర లాభం ₹${bestMandi.netProfitPerKg}/కిలో. సమీప మార్కెట్ కంటే ₹${extraEarnings.toLocaleString('en-IN')} అదనంగా సంపాదించండి.`,
+      confidenceBadge: `${confidence}% ఖచ్చితత్వం`
+    };
+  }
+
+  if (lang === 'mr') {
+    return {
+      title: `${bestMandi.name} मध्ये ${recommendedDaysWait} दिवसांनंतर विका`,
+      subtitle: `अपेक्षित निव्वळ नफा: ₹${bestMandi.netProfitPerKg}/किलो`,
+      body: `${bestMandi.name} मध्ये ${cropName} चे भाव ₹${bestMandi.forecastPrice}/किलो पर्यंत वाढण्याची शक्यता आहे. वाहतूक खर्च वजा केल्यानंतर तुमचा नफा ₹${bestMandi.netProfitPerKg}/किलो होईल. जवळच्या बाजारापेक्षा ₹${extraEarnings.toLocaleString('en-IN')} जास्त कमवा.`,
+      confidenceBadge: `${confidence}% विश्वासार्हता`
+    };
+  }
+
+  if (lang === 'kn') {
+    return {
+      title: `${bestMandi.name} ಮಾರುಕಟ್ಟೆಯಲ್ಲಿ ${recommendedDaysWait} ದಿನಗಳ ನಂತರ ಮಾರಾಟ ಮಾಡಿ`,
+      subtitle: `ನಿರೀಕ್ಷಿತ ನಿವ್ವಳ ಲಾಭ: ₹${bestMandi.netProfitPerKg}/ಕೆಜಿ`,
+      body: `${bestMandi.name} ನಲ್ಲಿ ${cropName} ಬೆಲೆ ₹${bestMandi.forecastPrice}/ಕೆಜಿಗೆ ಏರುವ ನಿರೀಕ್ಷೆಯಿದೆ. ಸಾರಿಗೆ ವೆಚ್ಚ ಕಡಿತದ ನಂತರ ನಿಮ್ಮ ನಿವ್ವಳ ಲಾಭ ₹${bestMandi.netProfitPerKg}/ಕೆಜಿ. ಹತ್ತಿರದ ಮಂಡಿಗಿಂತ ₹${extraEarnings.toLocaleString('en-IN')} ಹೆಚ್ಚು ಗಳಿಸಿ.`,
+      confidenceBadge: `${confidence}% ನಿಖರತೆ`
+    };
+  }
+
+  if (lang === 'pa') {
+    return {
+      title: `${bestMandi.name} ਵਿੱਚ ${recommendedDaysWait} ਦਿਨਾਂ ਬਾਅਦ ਵੇਚੋ`,
+      subtitle: `ਅਨੁਮਾਨਿਤ ਸ਼ੁੱਧ ਮੁਨਾਫਾ: ₹${bestMandi.netProfitPerKg}/ਕਿਲੋ`,
+      body: `${bestMandi.name} ਵਿੱਚ ${cropName} ਦੀ ਕੀਮਤ ₹${bestMandi.forecastPrice}/ਕਿਲੋ ਤੱਕ ਵਧਣ ਦੀ ਉਮੀਦ ਹੈ। ਢੋਆ-ਢੁਆਈ ਦੇ ਖਰਚੇ ਕੱਟਣ ਤੋਂ ਬਾਅਦ ਤੁਹਾਡਾ ਸ਼ੁੱਧ ਮੁਨਾਫਾ ₹${bestMandi.netProfitPerKg}/ਕਿਲੋ ਹੋਵੇਗਾ। ਨੇੜਲੀ ਮੰਡੀ ਨਾਲੋਂ ₹${extraEarnings.toLocaleString('en-IN')} ਵੱਧ ਕਮਾਓ।`,
+      confidenceBadge: `${confidence}% ਭਰੋਸਾ`
     };
   }
 

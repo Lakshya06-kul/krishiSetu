@@ -1,21 +1,17 @@
 import React, { useState } from 'react';
 import { UploadCloud, Camera, Image as ImageIcon, Trash2, Sparkles, RefreshCw } from 'lucide-react';
+import { getCropImages } from '../../services/mockData';
 
-const SAMPLE_PRODUCE_PHOTOS = [
-  'https://images.unsplash.com/photo-1592924357228-91a4daadcfea?w=500&auto=format&fit=crop&q=80',
-  'https://images.unsplash.com/photo-1518977676601-b53f82aba655?w=500&auto=format&fit=crop&q=80',
-  'https://images.unsplash.com/photo-1546470427-e26264be0b11?w=500&auto=format&fit=crop&q=80'
-];
-
-export default function ImageUploader({ images = [], onChange, onAnalyze }) {
+export default function ImageUploader({ images = [], onChange, onAnalyze, cropName = 'Tomatoes' }) {
   const [isAnalyzing, setIsAnalyzing] = useState(false);
 
   const handleSampleClick = () => {
     setIsAnalyzing(true);
+    const samplePhotos = getCropImages(cropName);
     setTimeout(() => {
-      onChange(SAMPLE_PRODUCE_PHOTOS);
+      onChange(samplePhotos);
       setIsAnalyzing(false);
-      if (onAnalyze) onAnalyze(SAMPLE_PRODUCE_PHOTOS);
+      if (onAnalyze) onAnalyze(samplePhotos);
     }, 800);
   };
 

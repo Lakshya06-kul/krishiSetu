@@ -3,15 +3,16 @@ import { useApp } from '../context/AppContext';
 import ImageUploader from '../components/common/ImageUploader';
 import QualityBadge from '../components/cards/QualityBadge';
 import { analyzeProduceQuality } from '../services/aiEngine';
-import { CROPS_CATALOG } from '../services/mockData';
+import { gradeProduceWithAI } from '../services/visionAiService';
+import { CROPS_CATALOG, getCropImages } from '../services/mockData';
 import { Sparkles, MapPin, Calendar, CheckCircle2, ArrowRight, ArrowLeft, RefreshCw, ShieldCheck } from 'lucide-react';
 import confetti from 'canvas-confetti';
 
-export default function CreateLotScreen({ setScreen }) {
+export default function CreateLotScreen({ setScreen, goBack }) {
   const { addProduceLot, lang } = useApp();
 
   const [step, setStep] = useState(1); // 1: Form | 2: AI Quality Grading Output
-  const [crop, setCrop] = useState('Tomatoes');
+  const [crop, setCrop] = useState('Fresh Tomatoes');
   const [quantity, setQuantity] = useState(1000);
   const [unit, setUnit] = useState('kg');
   const [harvestDate, setHarvestDate] = useState('2026-08-23');
@@ -26,24 +27,42 @@ export default function CreateLotScreen({ setScreen }) {
   const [aiReport, setAiReport] = useState(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
 
-  const handleRunAIQuality = () => {
-    if (images.length === 0) {
-      alert('Please upload or select at least 1-3 photos to run AI Quality Grading.');
-      return;
-    }
+  const handleCropChange = (newCrop) => {
+    setCrop(newCrop);
+    // If user hasn't uploaded custom files, reset images so they match the selected crop
+    setImages([]);
+  };
+
+  const handleRunAIQuality = async () => {
+    // If user didn't upload any photos, automatically supply default photos for the chosen crop
+    const effectiveImages = images.length > 0 ? images : getCropImages(crop);
 
     setIsAnalyzing(true);
-    setTimeout(() => {
-      const result = analyzeProduceQuality(crop, images, qualityNotes);
+    try {
+      const result = await gradeProduceWithAI(crop, effectiveImages, qualityNotes, variety);
       setAiReport(result);
+      if (images.length === 0) {
+        setImages(effectiveImages);
+      }
       setIsAnalyzing(false);
       setStep(2);
       // Trigger subtle celebration confetti
       confetti({ particleCount: 60, spread: 60, origin: { y: 0.6 } });
-    }, 1200);
+    } catch (err) {
+      console.error('Grading error:', err);
+      const fallbackResult = analyzeProduceQuality(crop, effectiveImages, qualityNotes);
+      setAiReport(fallbackResult);
+      if (images.length === 0) {
+        setImages(effectiveImages);
+      }
+      setIsAnalyzing(false);
+      setStep(2);
+    }
   };
 
   const handlePublishLot = () => {
+    const lotImages = images.length > 0 ? images : getCropImages(crop);
+
     addProduceLot({
       crop,
       quantity: Number(quantity),
@@ -54,9 +73,7 @@ export default function CreateLotScreen({ setScreen }) {
       variety,
       basePrice: Number(basePrice),
       qualityNotes,
-      images: images.length > 0 ? images : [
-        'https://images.unsplash.com/photo-1592924357228-91a4daadcfea?w=500&auto=format&fit=crop&q=80'
-      ],
+      images: lotImages,
       grade: aiReport?.grade || 'A',
       qualityConfidence: aiReport?.confidence || 88,
       qualityBonus: aiReport?.qualityBonus || 1.5,
@@ -73,11 +90,11 @@ export default function CreateLotScreen({ setScreen }) {
       {/* Top Breadcrumb & Progress Header */}
       <div className="flex items-center justify-between">
         <button
-          onClick={() => setScreen('dashboard')}
+          onClick={goBack ? goBack : () => setScreen('dashboard')}
           className="flex items-center gap-1.5 text-xs font-bold text-slate-600 hover:text-slate-900"
         >
           <ArrowLeft className="w-4 h-4" />
-          <span>Back to Dashboard</span>
+          <span>{lang === 'hi' ? 'वापस जाएँ' : 'Back to Dashboard'}</span>
         </button>
 
         <div className="flex items-center gap-2">
@@ -108,7 +125,7 @@ export default function CreateLotScreen({ setScreen }) {
               </label>
               <select
                 value={crop}
-                onChange={(e) => setCrop(e.target.value)}
+                onChange={(e) => handleCropChange(e.target.value)}
                 className="w-full px-3.5 py-3 rounded-xl border border-slate-200 bg-slate-50 font-bold text-sm text-slate-900 focus:ring-2 focus:ring-emerald-500 focus:outline-none"
               >
                 {CROPS_CATALOG.map(c => (
@@ -239,6 +256,7 @@ export default function CreateLotScreen({ setScreen }) {
           <ImageUploader
             images={images}
             onChange={setImages}
+            cropName={crop}
             onAnalyze={() => {}}
           />
 

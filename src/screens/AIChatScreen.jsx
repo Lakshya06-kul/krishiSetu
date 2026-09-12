@@ -1,25 +1,76 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useApp } from '../context/AppContext';
-import { Bot, Send, ArrowLeft, Mic, ShieldCheck, Link2, Sparkles, StopCircle, RefreshCw } from 'lucide-react';
+import { Bot, Send, ArrowLeft, Mic, ShieldCheck, Link2, Sparkles, StopCircle, RefreshCw, Volume2, VolumeX } from 'lucide-react';
 import { chat } from '../services/aiService';
 
-export default function AIChatScreen({ setScreen }) {
+const VOICE_LANG_MAP = {
+  en: 'en-IN',
+  hi: 'hi-IN',
+  ta: 'ta-IN',
+  te: 'te-IN',
+  mr: 'mr-IN',
+  kn: 'kn-IN',
+  pa: 'pa-IN'
+};
+
+export default function AIChatScreen({ setScreen, goBack }) {
   const { lang, userProfile } = useApp();
   const [messages, setMessages] = useState([
     {
       id: 1,
       sender: 'ai',
       text: lang === 'hi' 
-        ? `नमस्ते ${userProfile.name}! मैं आपका AgriLink AI सहायक हूँ। आप मुझसे मंडी के भाव, मौसम, या फसल की बीमारी के बारे में पूछ सकते हैं।` 
-        : `Hello ${userProfile.name}! I am your AgriLink AI assistant. You can ask me about mandi prices, weather, or crop diseases.`
+        ? `नमस्ते ${userProfile.name}! मैं आपका KrishiSetu ChatGPT कृषि विशेषज्ञ हूँ। आप मुझसे किसी भी फसल की बीमारी, खाद का सही अनुपात, कीटनाशक, आज के मंडी भाव, मौसम या किसी भी सवाल के बारे में पूछ सकते हैं।` 
+        : `Hello ${userProfile.name}! I am your KrishiSetu ChatGPT Agricultural Specialist. Ask me anything about crop diseases, NPK fertilizer schedules, pest control, live mandi prices, weather risk, or farm profitability.`
     }
   ]);
   const [input, setInput] = useState('');
   const [isTyping, setIsTyping] = useState(false);
   const [isListening, setIsListening] = useState(false);
+  const [speakingMsgId, setSpeakingMsgId] = useState(null);
   
   const chatEndRef = useRef(null);
   const recognitionRef = useRef(null);
+
+  const speakText = (text, msgId) => {
+    if (!('speechSynthesis' in window)) {
+      alert('Text-to-speech is not supported on this browser.');
+      return;
+    }
+
+    if (speakingMsgId === msgId) {
+      window.speechSynthesis.cancel();
+      setSpeakingMsgId(null);
+      return;
+    }
+
+    window.speechSynthesis.cancel();
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = VOICE_LANG_MAP[lang] || 'en-IN';
+    utterance.rate = 0.95; // slightly slower for better farmer comprehension
+
+    // Pick best matching native voice if available
+    const voices = window.speechSynthesis.getVoices();
+    const targetPrefix = VOICE_LANG_MAP[lang] || 'en';
+    const matchedVoice = voices.find(v => v.lang.startsWith(targetPrefix) || v.lang.includes('IN'));
+    if (matchedVoice) {
+      utterance.voice = matchedVoice;
+    }
+
+    utterance.onend = () => setSpeakingMsgId(null);
+    utterance.onerror = () => setSpeakingMsgId(null);
+
+    setSpeakingMsgId(msgId);
+    window.speechSynthesis.speak(utterance);
+  };
+
+  useEffect(() => {
+    return () => {
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+      }
+    };
+  }, []);
 
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -54,7 +105,7 @@ export default function AIChatScreen({ setScreen }) {
       recognitionRef.current?.stop();
       setIsListening(false);
     } else {
-      recognitionRef.current.lang = lang === 'hi' ? 'hi-IN' : 'en-US';
+      recognitionRef.current.lang = VOICE_LANG_MAP[lang] || 'en-US';
       recognitionRef.current?.start();
       setIsListening(true);
     }
@@ -73,7 +124,7 @@ export default function AIChatScreen({ setScreen }) {
     // Call actual AI Service
     let aiResponse;
     try {
-      const chatRes = await chat(userMessageText);
+      const chatRes = await chat(userMessageText, lang);
       aiResponse = {
         id: crypto.randomUUID(),
         sender: 'ai',
@@ -103,17 +154,24 @@ export default function AIChatScreen({ setScreen }) {
       {/* Header */}
       <div className="flex items-center gap-3 bg-white p-4 rounded-t-[24px] border border-slate-200/80 shadow-sm z-10 shrink-0">
         <button
-          onClick={() => setScreen('dashboard')}
+          onClick={goBack ? goBack : () => setScreen('dashboard')}
           className="p-2 hover:bg-slate-100 rounded-full transition"
         >
           <ArrowLeft className="w-5 h-5 text-slate-600" />
         </button>
-        <div className="w-10 h-10 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center">
+        <div className="w-10 h-10 rounded-full bg-emerald-600 text-white flex items-center justify-center shadow-sm">
           <Bot className="w-6 h-6" />
         </div>
-        <div>
-          <h2 className="font-black text-slate-900 leading-tight">AgriLink AI Assistant</h2>
-          <span className="text-[10px] font-bold text-emerald-600 uppercase">Powered by OpenAI</span>
+        <div className="flex-1">
+          <div className="flex items-center gap-2">
+            <h2 className="font-black text-slate-900 leading-tight">KrishiSetu ChatGPT</h2>
+            <span className="text-[10px] font-black bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-full">
+              Expert Ag AI
+            </span>
+          </div>
+          <span className="text-[11px] font-semibold text-slate-500">
+            {lang === 'hi' ? 'किसानों के लिए ऑल-इन-वन चैटजीपीटी विशेषज्ञ' : 'All-in-One ChatGPT for Indian Agriculture'}
+          </span>
         </div>
       </div>
 
@@ -132,12 +190,32 @@ export default function AIChatScreen({ setScreen }) {
               ) : msg.structured ? (
                 <div className="space-y-4">
                   <div>
-                    <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1.5 mb-1.5">
-                      <Bot className="w-3.5 h-3.5" /> {msg.marketResponse}
-                    </h4>
-                    <p className="text-sm font-semibold text-slate-800 bg-slate-50 p-3 rounded-xl border border-slate-100">
+                    <div className="flex items-center justify-between mb-1.5">
+                      <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
+                        <Bot className="w-3.5 h-3.5" /> {msg.marketResponse}
+                      </h4>
+                      <button
+                        type="button"
+                        onClick={() => speakText(`${msg.answer}. Recommendation: ${msg.recommendation || ''}`, msg.id)}
+                        className="flex items-center gap-1 text-[11px] font-bold text-emerald-600 hover:text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md transition active:scale-95"
+                        title="Listen in regional voice"
+                      >
+                        {speakingMsgId === msg.id ? (
+                          <>
+                            <VolumeX className="w-3.5 h-3.5 text-red-500 animate-pulse" />
+                            <span className="text-red-600">Stop</span>
+                          </>
+                        ) : (
+                          <>
+                            <Volume2 className="w-3.5 h-3.5" />
+                            <span>Listen</span>
+                          </>
+                        )}
+                      </button>
+                    </div>
+                    <div className="text-sm font-medium text-slate-800 bg-slate-50 p-3.5 rounded-xl border border-slate-100 whitespace-pre-line leading-relaxed">
                       {msg.answer}
-                    </p>
+                    </div>
                   </div>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div className="bg-emerald-50 border border-emerald-100 p-3 rounded-xl flex items-start gap-2">
@@ -169,7 +247,23 @@ export default function AIChatScreen({ setScreen }) {
                   </div>
                 </div>
               ) : (
-                <p className="text-sm">{msg.text}</p>
+                <div className="flex items-start justify-between gap-3">
+                  <p className="text-sm flex-1">{msg.text}</p>
+                  {msg.sender === 'ai' && (
+                    <button
+                      type="button"
+                      onClick={() => speakText(msg.text, msg.id)}
+                      className="text-emerald-600 hover:text-emerald-800 p-1 rounded-md transition"
+                      title="Listen"
+                    >
+                      {speakingMsgId === msg.id ? (
+                        <VolumeX className="w-4 h-4 text-red-500 animate-pulse" />
+                      ) : (
+                        <Volume2 className="w-4 h-4" />
+                      )}
+                    </button>
+                  )}
+                </div>
               )}
             </div>
           </div>
@@ -187,7 +281,26 @@ export default function AIChatScreen({ setScreen }) {
       </div>
 
       {/* Input Area */}
-      <div className="bg-white p-4 rounded-b-[24px] border border-slate-200/80 shadow-sm shrink-0">
+      <div className="bg-white p-3 sm:p-4 rounded-b-[24px] border border-slate-200/80 shadow-sm shrink-0 space-y-2.5">
+        {/* Quick Suggestion Pills */}
+        <div className="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-none text-xs">
+          {[
+            { label: lang === 'hi' ? '🐛 कीट व रोग उपचार' : '🐛 Pest & Blight Control', query: lang === 'hi' ? 'फसल में पत्ती धब्बा और कीट लगने पर क्या छिड़कें?' : 'What is the best spray for leaf spot and pest attacks?' },
+            { label: lang === 'hi' ? '🧪 यूरिया व डीएपी अनुपात' : '🧪 NPK Fertilizer Dosage', query: lang === 'hi' ? 'टमाटर और प्याज के लिए डीएपी और यूरिया की सही मात्रा क्या है?' : 'What is the exact DAP and Urea dosage per acre?' },
+            { label: lang === 'hi' ? '💰 आज के मंडी भाव' : '💰 Live Mandi Rates', query: lang === 'hi' ? 'आज टमाटर और प्याज के मंडी भाव और अगले 2 दिन का अनुमान क्या है?' : 'What are the current tomato mandi rates and 48hr price forecast?' },
+            { label: lang === 'hi' ? '📜 सरकारी योजनाएं' : '📜 Govt Subsidies (PMKSY/KCC)', query: lang === 'hi' ? 'ड्रिप सिंचाई और किसान क्रेडिट कार्ड (KCC) पर क्या सरकारी सब्सिडी है?' : 'What are the subsidy details for drip irrigation and KCC loans?' }
+          ].map((item, idx) => (
+            <button
+              key={idx}
+              type="button"
+              onClick={() => setInput(item.query)}
+              className="px-2.5 py-1 bg-slate-100 hover:bg-emerald-50 hover:text-emerald-700 hover:border-emerald-200 border border-slate-200 text-slate-700 font-semibold rounded-lg shrink-0 transition text-[11px]"
+            >
+              {item.label}
+            </button>
+          ))}
+        </div>
+
         <form onSubmit={handleSend} className="flex items-center gap-2">
           <button
             type="button"

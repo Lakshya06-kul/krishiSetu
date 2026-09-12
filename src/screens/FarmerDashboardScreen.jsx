@@ -1,31 +1,68 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useApp } from '../context/AppContext';
 import RecommendationCard from '../components/cards/RecommendationCard';
 import StatCard from '../components/cards/StatCard';
 import ChartCard from '../components/cards/ChartCard';
 import MarketCard from '../components/cards/MarketCard';
 import BuyerCard from '../components/cards/BuyerCard';
-import QualityBadge from '../components/cards/QualityBadge';
+import { useTranslation } from 'react-i18next';
 import { getCropPriceForecast } from '../services/aiEngine';
-import { PlusCircle, Wallet, Store, Package, Sparkles, MapPin, ArrowRight } from 'lucide-react';
+import { getDispatchWeatherAdvisory } from '../services/visionAiService';
+import { getCropImages } from '../services/mockData';
+import { PlusCircle, Wallet, Store, Package, Sparkles, MapPin, ArrowRight, CloudSun, ShieldAlert, CheckCircle2 } from 'lucide-react';
 
 export default function FarmerDashboardScreen({ setScreen }) {
   const { userProfile, produceLots, buyerOffers, recommendation, llmAdvice, lang, updateOfferStatus, selectedLotId, setSelectedLotId } = useApp();
+  const { t } = useTranslation();
+  const [weatherAlert, setWeatherAlert] = useState(null);
+
+  useEffect(() => {
+    getDispatchWeatherAdvisory().then(setWeatherAlert);
+  }, []);
 
   const priceForecastData = getCropPriceForecast();
   const pendingOffers = buyerOffers.filter(o => o.status === 'PENDING');
 
   return (
     <div className="space-y-6 pb-20 md:pb-8">
+      {/* Weather Dispatch Advisory Strip */}
+      {weatherAlert && (
+        <div className="bg-gradient-to-r from-emerald-50 via-teal-50 to-blue-50 border border-emerald-200/80 rounded-2xl p-3.5 px-4 flex flex-wrap items-center justify-between gap-3 shadow-sm">
+          <div className="flex items-center gap-3">
+            <div className="w-9 h-9 rounded-xl bg-white flex items-center justify-center text-emerald-600 shadow-sm border border-emerald-100">
+              <CloudSun className="w-5 h-5 text-amber-500" />
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <span className="text-xs font-black text-slate-900 tracking-tight">
+                  {lang === 'hi' ? 'मौसम आधारित प्रेषण सलाह' : 'Weather-Triggered Dispatch Advisory'}
+                </span>
+                <span className="text-[10px] font-bold bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-full">
+                  {weatherAlert.temperature} • Rain Risk {weatherAlert.rainProbability}
+                </span>
+              </div>
+              <p className="text-xs text-slate-600 mt-0.5 font-medium">
+                {weatherAlert.advice}
+              </p>
+            </div>
+          </div>
+          <button
+            onClick={() => setScreen('market_comparison')}
+            className="text-xs font-bold text-emerald-700 bg-white hover:bg-emerald-50 px-3 py-1.5 rounded-xl border border-emerald-200 transition shadow-xs"
+          >
+            {lang === 'hi' ? 'मार्ग विश्लेषण देखें' : 'View Route Risk'}
+          </button>
+        </div>
+      )}
       
       {/* Welcome Header */}
       <div className="bg-white rounded-[24px] p-5 sm:p-6 border border-slate-200/80 shadow-soft flex flex-wrap items-center justify-between gap-4">
         <div>
           <span className="text-xs font-extrabold text-emerald-700 bg-emerald-100 px-3 py-1 rounded-full uppercase tracking-wider">
-            {lang === 'hi' ? 'नमस्ते किसान' : 'Farmer Dashboard'}
+            {t('Farmer Dashboard')}
           </span>
           <h2 className="text-2xl sm:text-3xl font-black text-slate-900 mt-1.5 tracking-tight">
-            {lang === 'hi' ? `स्वागत है, ${userProfile.name}!` : `Welcome back, ${userProfile.name}!`}
+            {t('Welcome Back!')}, {userProfile.name}!
           </h2>
           <p className="text-xs sm:text-sm text-slate-500 font-medium mt-0.5">
             {lang === 'hi' 
@@ -40,7 +77,7 @@ export default function FarmerDashboardScreen({ setScreen }) {
           className="bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-sm py-3 px-5 rounded-[14px] shadow-md transition tap-active flex items-center gap-2"
         >
           <PlusCircle className="w-5 h-5" />
-          <span>{lang === 'hi' ? 'नई फसल अपलोड करें' : 'Upload Produce Lot'}</span>
+          <span>{t('Upload Produce Lot')}</span>
         </button>
       </div>
 
@@ -147,9 +184,12 @@ export default function FarmerDashboardScreen({ setScreen }) {
                   }`}
                 >
                   <img
-                    src={lot.images[0]}
+                    src={lot.images?.[0] || getCropImages(lot.crop)[0]}
                     alt={lot.crop}
                     className="w-12 h-12 rounded-lg object-cover ring-1 ring-slate-200"
+                    onError={(e) => {
+                      e.currentTarget.src = getCropImages(lot.crop)[0];
+                    }}
                   />
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center justify-between">

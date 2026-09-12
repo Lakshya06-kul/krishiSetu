@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useApp } from '../../context/AppContext';
-import { Leaf, Globe, Bell, TrendingUp, TrendingDown, ShoppingBag, Package, Bot } from 'lucide-react';
+import { Leaf, Globe, Bell, TrendingUp, TrendingDown, ShoppingBag, Package, Bot, ArrowLeft } from 'lucide-react';
 
 const ROLE_NOTIFICATIONS = {
   farmer: [
@@ -18,8 +18,8 @@ const ROLE_NOTIFICATIONS = {
   ]
 };
 
-export default function Header({ currentScreen, setScreen }) {
-  const { currentRole, switchRole, userProfile, lang, toggleLanguage, buyerOffers } = useApp();
+export default function Header({ currentScreen, setScreen, goBack, canGoBack }) {
+  const { currentRole, switchRole, userProfile, lang, setLanguage, toggleLanguage, buyerOffers } = useApp();
   const [showNotifs, setShowNotifs] = useState(false);
   const notifRef = useRef(null);
 
@@ -42,34 +42,56 @@ export default function Header({ currentScreen, setScreen }) {
     <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-slate-200 shadow-sm px-4 py-3">
       <div className="max-w-7xl mx-auto flex items-center justify-between">
         
-        {/* Brand Logo & Tagline */}
-        <div className="flex items-center gap-3 cursor-pointer" onClick={() => setScreen('dashboard')}>
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-emerald-600 to-green-500 flex items-center justify-center shadow-md shadow-emerald-500/20 text-white font-black text-xl">
-            <Leaf className="w-6 h-6 animate-pulse" />
-          </div>
-          <div>
-            <div className="flex items-center gap-1.5">
-              <span className="font-extrabold text-lg text-slate-900 tracking-tight">AgriLink</span>
-              <span className="bg-emerald-100 text-emerald-800 text-[10px] font-bold px-1.5 py-0.5 rounded-md uppercase">AI</span>
+        {/* Left Section: Back Button + Brand Logo & Tagline */}
+        <div className="flex items-center gap-3">
+          {canGoBack && (
+            <button
+              onClick={goBack}
+              className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl border border-slate-200 bg-slate-50 hover:bg-emerald-50 hover:border-emerald-300 text-slate-700 hover:text-emerald-700 font-bold text-xs transition shadow-sm active:scale-95"
+              title="Go to previous page"
+              aria-label="Go back"
+            >
+              <ArrowLeft className="w-4 h-4" />
+              <span className="hidden sm:inline">{lang === 'hi' ? 'पीछे' : 'Back'}</span>
+            </button>
+          )}
+
+          <div className="flex items-center gap-3 cursor-pointer" onClick={() => setScreen('dashboard')}>
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-emerald-600 to-green-500 flex items-center justify-center shadow-md shadow-emerald-500/20 text-white font-black text-xl">
+              <Leaf className="w-6 h-6 animate-pulse" />
             </div>
-            <p className="text-[11px] text-slate-500 font-medium">
-              {lang === 'hi' ? 'किसानों के लिए स्मार्ट बिक्री' : 'Smarter Selling for Farmers'}
-            </p>
+            <div>
+              <div className="flex items-center gap-1.5">
+                <span className="font-extrabold text-lg text-slate-900 tracking-tight">AgriLink</span>
+                <span className="bg-emerald-100 text-emerald-800 text-[10px] font-bold px-1.5 py-0.5 rounded-md uppercase">AI</span>
+              </div>
+              <p className="text-[11px] text-slate-500 font-medium">
+                {lang === 'hi' ? 'किसानों के लिए स्मार्ट बिक्री' : 'Smarter Selling for Farmers'}
+              </p>
+            </div>
           </div>
         </div>
 
         {/* Action Controls & Role Switcher */}
         <div className="flex items-center gap-2">
           
-          {/* Language Switcher */}
-          <button
-            onClick={toggleLanguage}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-200 bg-slate-50 hover:bg-slate-100 text-xs font-semibold text-slate-700 transition"
-            title="Switch Language"
-          >
-            <Globe className="w-3.5 h-3.5 text-emerald-600" />
-            <span>{lang === 'en' ? 'हिंदी' : 'English'}</span>
-          </button>
+          {/* Regional Language Switcher Dropdown */}
+          <div className="relative">
+            <select
+              value={lang}
+              onChange={(e) => setLanguage ? setLanguage(e.target.value) : toggleLanguage()}
+              className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border border-slate-200 bg-slate-50 hover:bg-slate-100 text-xs font-bold text-slate-800 transition cursor-pointer focus:outline-none focus:ring-1 focus:ring-emerald-500"
+              title="Select Regional Language"
+            >
+              <option value="en">🌐 English</option>
+              <option value="hi">🇮🇳 हिंदी (Hindi)</option>
+              <option value="ta">🌾 தமிழ் (Tamil)</option>
+              <option value="te">🌾 తెలుగు (Telugu)</option>
+              <option value="mr">🌾 मराठी (Marathi)</option>
+              <option value="kn">🌾 ಕನ್ನಡ (Kannada)</option>
+              <option value="pa">🌾 ਪੰਜਾਬੀ (Punjabi)</option>
+            </select>
+          </div>
 
           {/* Notifications Dropdown */}
           <div className="relative" ref={notifRef}>

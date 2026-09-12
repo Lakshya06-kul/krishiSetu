@@ -1,8 +1,9 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   ArrowLeft, Search, Filter, MapPin, Truck, TrendingUp, Info, Fuel,
-  Navigation, CalendarClock, BrainCircuit, Activity, BarChart3, AlertTriangle, ShieldCheck
+  Navigation, CalendarClock, BrainCircuit, Activity, BarChart3, AlertTriangle, ShieldCheck,
+  CloudSun, Droplets, Thermometer, Wind
 } from 'lucide-react';
 import { 
   AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, 
@@ -15,6 +16,7 @@ import 'leaflet/dist/leaflet.css';
 // Mock Data
 import { MANDIS_DATABASE, MARKET_TREND_DATA, PROFIT_BREAKDOWN_DATA, TRANSPORT_VEHICLES } from '../services/mockData';
 import { useApp } from '../context/AppContext';
+import { getDispatchWeatherAdvisory, fetchLiveMandiPrices } from '../services/visionAiService';
 
 // Custom Leaflet Marker (SaaS style)
 const createCustomIcon = (color) => {
@@ -26,11 +28,18 @@ const createCustomIcon = (color) => {
   });
 };
 
-export default function MarketComparisonScreen({ setScreen }) {
+export default function MarketComparisonScreen({ setScreen, goBack }) {
   const [searchTerm, setSearchTerm] = useState('');
   const [distanceFilter, setDistanceFilter] = useState(300); // Max km
   const [chartMode, setChartMode] = useState('forecast'); // forecast, history
   const [selectedVehicle, setSelectedVehicle] = useState('mini_truck');
+  const [weatherAdvisory, setWeatherAdvisory] = useState(null);
+  const [liveApmcPrices, setLiveApmcPrices] = useState([]);
+
+  useEffect(() => {
+    getDispatchWeatherAdvisory().then(setWeatherAdvisory);
+    fetchLiveMandiPrices().then(setLiveApmcPrices);
+  }, []);
 
   // Compute live net profit for all mandis based on vehicle selected
   const vehicleInfo = TRANSPORT_VEHICLES.find(v => v.id === selectedVehicle) || TRANSPORT_VEHICLES[1];
@@ -60,7 +69,7 @@ export default function MarketComparisonScreen({ setScreen }) {
       {/* Header */}
       <div className="flex items-center justify-between">
         <button
-          onClick={() => setScreen('dashboard')}
+          onClick={goBack ? goBack : () => setScreen('dashboard')}
           className="flex items-center gap-1.5 text-sm font-bold text-slate-600 hover:text-slate-900 transition-colors"
         >
           <ArrowLeft className="w-5 h-5" />
@@ -225,9 +234,21 @@ export default function MarketComparisonScreen({ setScreen }) {
                 <span className="font-bold text-emerald-400">+₹2.4/kg</span>
               </div>
               <div className="flex items-center justify-between bg-white/10 p-3 rounded-xl border border-white/5">
-                <span className="text-sm font-medium text-slate-300">Weather risk</span>
-                <span className="font-bold text-blue-400">Low</span>
+                <div className="flex items-center gap-1.5">
+                  <CloudSun className="w-4 h-4 text-amber-400" />
+                  <span className="text-sm font-medium text-slate-300">Weather Risk</span>
+                </div>
+                <div className="text-right">
+                  <span className={`font-bold text-sm ${weatherAdvisory?.riskLevel === 'LOW' ? 'text-emerald-400' : 'text-amber-400'}`}>
+                    {weatherAdvisory?.riskLevel || 'LOW'} ({weatherAdvisory?.rainProbability || '12%'} Rain)
+                  </span>
+                </div>
               </div>
+              {weatherAdvisory?.advice && (
+                <p className="text-[11px] text-slate-300 bg-white/5 p-2.5 rounded-lg border border-white/5 leading-relaxed">
+                  💡 <strong>Dispatch Note:</strong> {weatherAdvisory.advice}
+                </p>
+              )}
               <div className="flex items-center justify-between bg-white/10 p-3 rounded-xl border border-white/5">
                 <span className="text-sm font-medium text-slate-300">Travel time</span>
                 <span className="font-bold text-amber-400">{Math.round(bestMandi?.distanceKm || 0)} mins</span>
@@ -306,6 +327,25 @@ export default function MarketComparisonScreen({ setScreen }) {
 
         </div>
       </div>
+
+      {/* Live APMC Agmarknet Benchmark Feed */}
+      {liveApmcPrices.length > 0 && (
+        <div className="bg-emerald-950 text-white rounded-2xl p-4 shadow-sm border border-emerald-800 flex flex-wrap items-center justify-between gap-3">
+          <div className="flex items-center gap-2">
+            <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-ping" />
+            <span className="text-xs font-black text-emerald-300 uppercase tracking-wider">Live APMC Agmarknet Benchmark</span>
+          </div>
+          <div className="flex flex-wrap items-center gap-4 text-xs font-semibold">
+            {liveApmcPrices.map((apmc) => (
+              <div key={apmc.mandi} className="flex items-center gap-1.5 bg-white/10 px-3 py-1 rounded-lg">
+                <span className="text-slate-300">{apmc.mandi}:</span>
+                <span className="text-emerald-300 font-bold">₹{apmc.modalPrice}/kg</span>
+                <span className="text-[10px] text-amber-300 font-bold">{apmc.trend}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* 2. Interactive Mandi Table */}
       <div className="bg-white rounded-3xl border border-slate-200 p-6 shadow-sm overflow-hidden">

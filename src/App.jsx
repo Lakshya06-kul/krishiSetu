@@ -20,38 +20,56 @@ import VoiceFAB from './components/common/VoiceFAB';
 function MainApp() {
   const { currentRole, toastMessage } = useApp();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [activeScreen, setActiveScreen] = useState('dashboard');
+  const [screenHistory, setScreenHistory] = useState(['dashboard']);
+  const activeScreen = screenHistory[screenHistory.length - 1] || 'dashboard';
+
+  const navigateTo = (newScreen) => {
+    if (newScreen === activeScreen) return;
+    setScreenHistory((prev) => [...prev, newScreen]);
+  };
+
+  const goBack = () => {
+    setScreenHistory((prev) => {
+      if (prev.length <= 1) return ['dashboard'];
+      return prev.slice(0, -1);
+    });
+  };
+
+  const resetToDashboard = () => {
+    setScreenHistory(['dashboard']);
+  };
 
   if (!isAuthenticated) {
     return <SplashAuthScreen onComplete={() => setIsAuthenticated(true)} />;
   }
 
-    const renderScreen = () => {
-      switch (activeScreen) {
-        case 'dashboard':
-          if (currentRole === 'buyer') return <BuyerDashboardScreen setScreen={setActiveScreen} />;
-          if (currentRole === 'fpo') return <FPODashboardScreen setScreen={setActiveScreen} />;
-          return <FarmerDashboardScreen setScreen={setActiveScreen} />;
-        case 'create_lot':
-          return <CreateLotScreen setScreen={setActiveScreen} />;
-        case 'ai_recommendation':
-          return <AIRecommendationScreen setScreen={setActiveScreen} />;
-        case 'market_comparison':
-          return <MarketComparisonScreen setScreen={setActiveScreen} />;
-        case 'marketplace':
-          return <BuyerMarketplaceScreen setScreen={setActiveScreen} />;
-        case 'profile':
-          return <AnalyticsProfileScreen setScreen={setActiveScreen} />;
-        case 'logistics':
-          return <LogisticsScreen setScreen={setActiveScreen} />;
-        case 'ai_chat':
-          return <AIChatScreen setScreen={setActiveScreen} />;
-        default:
-          if (currentRole === 'buyer') return <BuyerDashboardScreen setScreen={setActiveScreen} />;
-          if (currentRole === 'fpo') return <FPODashboardScreen setScreen={setActiveScreen} />;
-          return <FarmerDashboardScreen setScreen={setActiveScreen} />;
-      }
-    };
+  const renderScreen = () => {
+    const screenProps = { setScreen: navigateTo, goBack };
+    switch (activeScreen) {
+      case 'dashboard':
+        if (currentRole === 'buyer') return <BuyerDashboardScreen {...screenProps} />;
+        if (currentRole === 'fpo') return <FPODashboardScreen {...screenProps} />;
+        return <FarmerDashboardScreen {...screenProps} />;
+      case 'create_lot':
+        return <CreateLotScreen {...screenProps} />;
+      case 'ai_recommendation':
+        return <AIRecommendationScreen {...screenProps} />;
+      case 'market_comparison':
+        return <MarketComparisonScreen {...screenProps} />;
+      case 'marketplace':
+        return <BuyerMarketplaceScreen {...screenProps} />;
+      case 'profile':
+        return <AnalyticsProfileScreen {...screenProps} />;
+      case 'logistics':
+        return <LogisticsScreen {...screenProps} />;
+      case 'ai_chat':
+        return <AIChatScreen {...screenProps} />;
+      default:
+        if (currentRole === 'buyer') return <BuyerDashboardScreen {...screenProps} />;
+        if (currentRole === 'fpo') return <FPODashboardScreen {...screenProps} />;
+        return <FarmerDashboardScreen {...screenProps} />;
+    }
+  };
 
   return (
     <div className="min-h-screen bg-[#F8FAFC] flex flex-col antialiased text-slate-900 selection:bg-emerald-500 selection:text-white pt-10">
@@ -69,17 +87,22 @@ function MainApp() {
       )}
 
       {/* Main App Header */}
-      <Header currentScreen={activeScreen} setScreen={setActiveScreen} />
+      <Header 
+        currentScreen={activeScreen} 
+        setScreen={navigateTo} 
+        goBack={goBack} 
+        canGoBack={screenHistory.length > 1 || activeScreen !== 'dashboard'} 
+      />
 
       {/* Main Screen Content Body */}
       <main className="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 md:p-8">
         {renderScreen()}
       </main>
 
-      <VoiceFAB />
+      <VoiceFAB onOpenAssistant={() => navigateTo('ai_chat')} />
 
       {/* Mobile Bottom Navigation */}
-      <BottomNav activeScreen={activeScreen} setScreen={setActiveScreen} />
+      <BottomNav activeScreen={activeScreen} setScreen={navigateTo} />
 
     </div>
   );

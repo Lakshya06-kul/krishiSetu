@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useApp } from '../context/AppContext';
 import { ResponsiveContainer, BarChart, Bar, PieChart, Pie, Cell, LineChart, Line, XAxis, YAxis, Tooltip, Legend, CartesianGrid, AreaChart, Area } from 'recharts';
-import { User, BarChart3, Download, Settings, ShieldCheck, Phone, MapPin, Globe, Bell, Users, Building, FileText, CheckCircle2, Lock, ToggleLeft, ToggleRight, Star, History } from 'lucide-react';
+import { User, BarChart3, Download, Settings, ShieldCheck, Phone, MapPin, Globe, Bell, Users, Building, FileText, CheckCircle2, Lock, ToggleLeft, ToggleRight, Star, History, ArrowLeft } from 'lucide-react';
 
 // --- FARMER MOCK DATA ---
 const FARMER_DATA = {
@@ -44,44 +44,46 @@ const BUYER_DATA = {
     { label: 'Week 3', spend: 38000, volume: 1250 }, { label: 'Week 4', spend: 45000, volume: 1500 }
   ],
   Month: [
-    { label: 'Apr', spend: 120000, volume: 4000 }, { label: 'May', spend: 155000, volume: 5500 },
-    { label: 'Jun', spend: 180000, volume: 6200 }, { label: 'Jul', spend: 140000, volume: 4800 },
-    { label: 'Aug', spend: 210000, volume: 7000 }
+    { label: 'Apr', spend: 180000, volume: 5500 }, { label: 'May', spend: 210000, volume: 6800 },
+    { label: 'Jun', spend: 260000, volume: 8200 }, { label: 'Jul', spend: 230000, volume: 7400 },
+    { label: 'Aug', spend: 290000, volume: 9100 }
   ],
   Season: [
-    { label: 'Q1 2026', spend: 450000, volume: 15000 },
-    { label: 'Q2 2026', spend: 520000, volume: 17500 },
-    { label: 'Q3 2026', spend: 610000, volume: 20000 }
+    { label: 'Kharif 25', spend: 750000, volume: 24000 },
+    { label: 'Rabi 25-26', spend: 890000, volume: 29000 },
+    { label: 'Zaid 26', spend: 520000, volume: 17000 },
+    { label: 'Kharif 26', spend: 980000, volume: 32000 }
   ]
 };
 
 const QUALITY_PROCURED = [
-  { name: 'Grade A', value: 65, color: '#16A34A' },
-  { name: 'Grade B', value: 30, color: '#F59E0B' },
-  { name: 'Grade C', value: 5, color: '#EF4444' }
+  { name: 'Grade A (Premium)', value: 60, color: '#16A34A' },
+  { name: 'Grade B (Standard)', value: 30, color: '#2563EB' },
+  { name: 'Grade C (Fair)', value: 10, color: '#F59E0B' }
 ];
 
 // --- FPO MOCK DATA ---
 const FPO_DATA = {
   Week: [
-    { label: 'Mon', members: 118, poolVolume: 2500, revenue: 75000 }, { label: 'Tue', members: 119, poolVolume: 3200, revenue: 95000 },
-    { label: 'Wed', members: 119, poolVolume: 2800, revenue: 84000 }, { label: 'Thu', members: 120, poolVolume: 3500, revenue: 105000 },
-    { label: 'Fri', members: 120, poolVolume: 4100, revenue: 122000 }, { label: 'Sat', members: 120, poolVolume: 3900, revenue: 116000 },
-    { label: 'Sun', members: 120, poolVolume: 2000, revenue: 60000 }
+    { label: 'Mon', pooled: 3000, sold: 2800 }, { label: 'Tue', pooled: 4500, sold: 4200 },
+    { label: 'Wed', pooled: 3800, sold: 3500 }, { label: 'Thu', pooled: 5200, sold: 5000 },
+    { label: 'Fri', pooled: 6100, sold: 5900 }, { label: 'Sat', pooled: 4900, sold: 4700 },
+    { label: 'Sun', pooled: 5500, sold: 5300 }
   ],
   Month: [
-    { label: 'Apr', members: 105, poolVolume: 12000, revenue: 380000 }, { label: 'May', members: 110, poolVolume: 15000, revenue: 450000 },
-    { label: 'Jun', members: 115, poolVolume: 18000, revenue: 520000 }, { label: 'Jul', members: 118, poolVolume: 16500, revenue: 490000 },
-    { label: 'Aug', members: 120, poolVolume: 22000, revenue: 650000 }
+    { label: 'Apr', pooled: 18000, sold: 17200 }, { label: 'May', pooled: 22000, sold: 21000 },
+    { label: 'Jun', pooled: 29000, sold: 28100 }, { label: 'Jul', pooled: 25000, sold: 24300 },
+    { label: 'Aug', pooled: 33000, sold: 31800 }
   ],
   Season: [
-    { label: 'Winter 25', members: 95, poolVolume: 45000, revenue: 1350000 },
-    { label: 'Summer 26', members: 110, poolVolume: 52000, revenue: 1580000 },
-    { label: 'Monsoon 26', members: 120, poolVolume: 65000, revenue: 1950000 }
+    { label: 'Kharif 25', pooled: 95000, sold: 91000 },
+    { label: 'Rabi 25-26', pooled: 110000, sold: 106000 },
+    { label: 'Zaid 26', pooled: 65000, sold: 62000 },
+    { label: 'Kharif 26', pooled: 125000, sold: 121000 }
   ]
 };
 
-export default function AnalyticsProfileScreen() {
+export default function AnalyticsProfileScreen({ setScreen, goBack }) {
   const { userProfile, currentRole, lang, toggleLanguage, showToast } = useApp();
   const [activeTab, setActiveTab] = useState('analytics'); // 'analytics' | 'profile' | 'settings'
   const [timeFilter, setTimeFilter] = useState('Month');
@@ -472,7 +474,17 @@ export default function AnalyticsProfileScreen() {
 
   return (
     <div className="max-w-5xl mx-auto space-y-6 pb-20 md:pb-8">
-      
+      {/* Top Navigation */}
+      <div className="flex items-center justify-between">
+        <button
+          onClick={goBack ? goBack : () => setScreen('dashboard')}
+          className="flex items-center gap-1.5 text-xs font-bold text-slate-600 hover:text-slate-900 transition-colors"
+        >
+          <ArrowLeft className="w-4 h-4" />
+          <span>{lang === 'hi' ? 'पीछे जाएँ' : 'Back'}</span>
+        </button>
+      </div>
+
       {/* Top Header & Tab switcher */}
       <div className="bg-white rounded-[24px] p-6 border border-slate-200/80 shadow-soft flex flex-wrap items-center justify-between gap-4">
         <div>

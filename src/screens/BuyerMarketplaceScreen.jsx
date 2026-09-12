@@ -2,9 +2,10 @@ import React, { useState } from 'react';
 import { useApp } from '../context/AppContext';
 import BuyerCard from '../components/cards/BuyerCard';
 import QualityBadge from '../components/cards/QualityBadge';
-import { Store, Filter, Search, CheckCircle2, ShieldCheck, Star, MapPin, Send, X } from 'lucide-react';
+import { Store, Filter, Search, CheckCircle2, ShieldCheck, Star, MapPin, Send, X, ArrowLeft } from 'lucide-react';
+import { getCropImages } from '../services/mockData';
 
-export default function BuyerMarketplaceScreen({ setScreen }) {
+export default function BuyerMarketplaceScreen({ setScreen, goBack }) {
   const { produceLots, buyerOffers, sendBuyerOffer, updateOfferStatus, currentRole, lang } = useApp();
 
   const [selectedCropFilter, setSelectedCropFilter] = useState('ALL');
@@ -37,6 +38,9 @@ export default function BuyerMarketplaceScreen({ setScreen }) {
 
     sendBuyerOffer({
       lotId: selectedLotForOffer.id,
+      crop: selectedLotForOffer.crop,
+      quantity: selectedLotForOffer.quantity,
+      unit: selectedLotForOffer.unit || 'kg',
       offeredPricePerKg: Number(offeredPrice),
       totalAmount: Math.round(Number(offeredPrice) * selectedLotForOffer.quantity),
       note: offerNote
@@ -47,7 +51,17 @@ export default function BuyerMarketplaceScreen({ setScreen }) {
 
   return (
     <div className="max-w-5xl mx-auto space-y-6 pb-20 md:pb-8">
-      
+      {/* Top Navigation */}
+      <div className="flex items-center justify-between">
+        <button
+          onClick={goBack ? goBack : () => setScreen('dashboard')}
+          className="flex items-center gap-1.5 text-xs font-bold text-slate-600 hover:text-slate-900 transition-colors"
+        >
+          <ArrowLeft className="w-4 h-4" />
+          <span>{lang === 'hi' ? 'पीछे जाएँ' : 'Back'}</span>
+        </button>
+      </div>
+
       {/* Header Banner */}
       <div className="bg-white rounded-[24px] p-6 border border-slate-200/80 shadow-soft flex flex-wrap items-center justify-between gap-4">
         <div>
@@ -126,9 +140,12 @@ export default function BuyerMarketplaceScreen({ setScreen }) {
               {/* Lot Image Carousel / Thumbnail */}
               <div className="relative rounded-2xl overflow-hidden aspect-video border border-slate-100">
                 <img
-                  src={lot.images[0]}
+                  src={lot.images?.[0] || getCropImages(lot.crop)[0]}
                   alt={lot.crop}
                   className="w-full h-full object-cover"
+                  onError={(e) => {
+                    e.currentTarget.src = getCropImages(lot.crop)[0];
+                  }}
                 />
                 <div className="absolute top-3 left-3">
                   <QualityBadge
@@ -190,8 +207,8 @@ export default function BuyerMarketplaceScreen({ setScreen }) {
         ))}
       </div>
 
-      {/* Received Buyer Offers Section for Farmers */}
-      {currentRole === 'farmer' && (
+      {/* Offers & Negotiation Section: Visible to Farmers and Buyers */}
+      {currentRole === 'farmer' ? (
         <div className="bg-white rounded-[24px] p-6 border border-slate-200/80 shadow-soft space-y-4">
           <h3 className="font-extrabold text-base text-slate-900 flex items-center gap-2">
             <Store className="w-5 h-5 text-emerald-600" />
@@ -200,6 +217,29 @@ export default function BuyerMarketplaceScreen({ setScreen }) {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {buyerOffers.map(offer => (
+              <BuyerCard
+                key={offer.id}
+                offer={offer}
+                onAccept={(id) => updateOfferStatus(id, 'ACCEPTED')}
+                onDecline={(id) => updateOfferStatus(id, 'DECLINED')}
+              />
+            ))}
+          </div>
+        </div>
+      ) : (
+        <div className="bg-white rounded-[24px] p-6 border border-slate-200/80 shadow-soft space-y-4">
+          <div className="flex items-center justify-between">
+            <h3 className="font-extrabold text-base text-slate-900 flex items-center gap-2">
+              <Store className="w-5 h-5 text-blue-600" />
+              <span>My Sent Offers & Farmer Counter-Bids</span>
+            </h3>
+            <span className="text-xs font-bold bg-blue-100 text-blue-800 px-2.5 py-0.5 rounded-full">
+              {buyerOffers.filter(o => o.buyerId === 'usr_buyer_1').length} Active Bids
+            </span>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {buyerOffers.filter(o => o.buyerId === 'usr_buyer_1').map(offer => (
               <BuyerCard
                 key={offer.id}
                 offer={offer}
@@ -265,11 +305,21 @@ export default function BuyerMarketplaceScreen({ setScreen }) {
                 />
               </div>
 
+              {/* Escrow Guarantee Banner */}
+              <div className="p-3 bg-emerald-50 rounded-xl border border-emerald-200 flex items-center gap-2.5 text-xs text-emerald-900">
+                <ShieldCheck className="w-5 h-5 text-emerald-600 shrink-0" />
+                <div>
+                  <span className="font-extrabold block">50% Advance + 50% On-Delivery Escrow</span>
+                  <span className="text-[11px] text-slate-600">50% is paid upfront to the farmer upon offer acceptance; the remaining 50% balance is released automatically upon delivery inspection.</span>
+                </div>
+              </div>
+
               <button
                 type="submit"
-                className="w-full bg-blue-600 hover:bg-blue-700 text-white font-extrabold py-3.5 px-4 rounded-xl shadow-md transition tap-active"
+                className="w-full bg-blue-600 hover:bg-blue-700 text-white font-extrabold text-sm py-3 rounded-xl shadow-md transition flex items-center justify-center gap-2"
               >
-                Submit Official Purchase Offer
+                <Send className="w-4 h-4" />
+                <span>Deposit to Escrow & Send Offer</span>
               </button>
             </form>
           </div>

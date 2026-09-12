@@ -3,18 +3,18 @@ import { useApp } from '../context/AppContext';
 import { Truck, MapPin, Navigation, ArrowLeft, Fuel } from 'lucide-react';
 import { TRANSPORT_VEHICLES } from '../services/mockData';
 
-export default function LogisticsScreen({ setScreen }) {
+export default function LogisticsScreen({ setScreen, goBack }) {
   const { lang } = useApp();
 
   return (
     <div className="max-w-4xl mx-auto space-y-6 pb-20 md:pb-8">
       <div className="flex items-center justify-between">
         <button
-          onClick={() => setScreen('dashboard')}
+          onClick={goBack ? goBack : () => setScreen('dashboard')}
           className="flex items-center gap-1.5 text-xs font-bold text-slate-600 hover:text-slate-900"
         >
           <ArrowLeft className="w-4 h-4" />
-          <span>{lang === 'hi' ? 'वापस डैशबोर्ड पर जाएं' : 'Back to Dashboard'}</span>
+          <span>{lang === 'hi' ? 'वापस जाएं' : 'Back'}</span>
         </button>
       </div>
 

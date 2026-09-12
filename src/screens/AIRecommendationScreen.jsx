@@ -3,9 +3,9 @@ import { useApp } from '../context/AppContext';
 import RecommendationCard from '../components/cards/RecommendationCard';
 import ChartCard from '../components/cards/ChartCard';
 import { getCropPriceForecast } from '../services/aiEngine';
-import { Sparkles, ArrowRight, ShieldCheck, CheckCircle2, TrendingUp, Truck, Coins, Info, HelpCircle } from 'lucide-react';
+import { Sparkles, ArrowRight, ArrowLeft, ShieldCheck, CheckCircle2, TrendingUp, Truck, Coins, Info, HelpCircle } from 'lucide-react';
 
-export default function AIRecommendationScreen({ setScreen }) {
+export default function AIRecommendationScreen({ setScreen, goBack }) {
   const { recommendation, llmAdvice, selectedLot, lang } = useApp();
 
   const priceForecastData = getCropPriceForecast();
@@ -15,6 +15,16 @@ export default function AIRecommendationScreen({ setScreen }) {
 
   return (
     <div className="max-w-4xl mx-auto space-y-6 pb-20 md:pb-8">
+      {/* Top Navigation */}
+      <div className="flex items-center justify-between">
+        <button
+          onClick={goBack ? goBack : () => setScreen('dashboard')}
+          className="flex items-center gap-1.5 text-xs font-bold text-slate-600 hover:text-slate-900 transition-colors"
+        >
+          <ArrowLeft className="w-4 h-4" />
+          <span>{lang === 'hi' ? 'पीछे जाएँ' : 'Back'}</span>
+        </button>
+      </div>
       
       {/* Top Header */}
       <div className="bg-white rounded-[24px] p-6 border border-slate-200/80 shadow-soft">
